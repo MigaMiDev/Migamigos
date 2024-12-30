@@ -1,0 +1,18 @@
+{
+  "companion.backpack_opening": {
+    "subtitle": "subtitle.migamigos.companion.backpack_opening",
+    "sounds": [
+      {
+        "name": "migamigos:companion/backpack_opening"
+      }
+    ]
+  },
+  "companion.backpack_closing": {
+    "subtitle": "subtitle.migamigos.companion.backpack_closing",
+    "sounds": [
+      {
+        "name": "migamigos:companion/backpack_closing"
+      }
+    ]
+  }
+}

@@ -1,0 +1,137 @@
+buildscript {
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+}
+
+version = "0.0.1-1.20.1"
+group = "ttv.migami"
+archivesBaseName = "Migamigos"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+mixin {
+    add sourceSets.main, "migamigos.refmap.json"
+    config 'migamigos.mixins.json'
+}
+
+minecraft {
+    // mappings channel: 'official', version: '1.20.1'
+    mappings channel: 'parchment', version: '2023.09.03-1.20.1'
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                migamigos {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            arg '-mixin.config=migamigos.mixins.json'
+            mods {
+                migamigos {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'migamigos', '--all', '--output', file('src/generated/resources/')
+            arg '-mixin.config=migamigos.mixins.json'
+            mods {
+                migamigos {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url "https://www.cursemaven.com"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
+    implementation fg.deobf('curse.maven:framework-549225:5692398')
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.4')
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "My Companion",
+                "Specification-Vendor"    : "MigaMi",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : "My Companion",
+                "Implementation-Version"  : project.version,
+                "Implementation-Vendor"   : "MigaMi",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "migamigos.mixins.json"
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file:///X:/localmaven/mcmods"
+        }
+    }
+}

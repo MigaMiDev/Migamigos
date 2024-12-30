@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="GNU GPLv3"
+
+[[mods]]
+modId="migamigos"
+version="0.0.1"
+displayName="My Companion"
+authors="MigaMi"
+credits="MrCrayfish"
+description="Companions that feel alive!"
+
+[[dependencies.migamigos]]
+    modId="forge"
+    mandatory=true
+    versionRange="[46, 48)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.migamigos]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20, 1.20.2)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.migamigos]]
+    modId="framework"
+    mandatory=true
+    versionRange="[0.7.0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.migamigos]]
+    modId="geckolib"
+    mandatory=true
+    versionRange="[4.4.4,)"
+    ordering="NONE"
+    side="BOTH"

@@ -1,0 +1,16 @@
+{
+  "entity.migamigos.companion": "Companion",
+  "slot.migamigos.coming_soon": "Coming soon!",
+  "subtitle.migamigos.companion.backpack_opening": "Backpack Opening",
+  "subtitle.migamigos.companion.backpack_closing": "Backpack Closing",
+  "gui.migamigos.companion_inventory.attacking_any_entity.true": "Attacks All Hostiles",
+  "gui.migamigos.companion_inventory.attacking_any_entity.false": "Attacks Only Targets",
+  "gui.migamigos.companion_inventory.defend_player_only.true": "Defends Player Only",
+  "gui.migamigos.companion_inventory.defend_player_only.false": "Defends Team",
+  "gui.migamigos.companion_inventory.focus_on_main_target.true": "Focuses On Targets",
+  "gui.migamigos.companion_inventory.focus_on_main_target.false": "Supports Team",
+  "gui.migamigos.companion_inventory.allow_wandering.true": "Can Wander",
+  "gui.migamigos.companion_inventory.allow_wandering.false": "Cannot Wander",
+  "gui.migamigos.companion_inventory.following.true": "Is Following",
+  "gui.migamigos.companion_inventory.following.false": "Is Staying"
+}
