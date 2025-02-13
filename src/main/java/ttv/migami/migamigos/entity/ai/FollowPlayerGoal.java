@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.EnumSet;
 
@@ -20,7 +20,7 @@ public class FollowPlayerGoal extends Goal {
     private static final int MIN_HORIZONTAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 2;
     private static final int MAX_HORIZONTAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 3;
     private static final int MAX_VERTICAL_DISTANCE_FROM_PLAYER_WHEN_TELEPORTING = 1;
-    private final Companion companion;
+    private final AmigoEntity amigoEntity;
     private LivingEntity player;
     private final LevelReader level;
     private final double speedModifier;
@@ -31,31 +31,33 @@ public class FollowPlayerGoal extends Goal {
     private float oldWaterCost;
     private final boolean canFly;
 
-    public FollowPlayerGoal(Companion companion, double pSpeedModifier, float pStartDistance, float pStopDistance, boolean pCanFly) {
-        this.companion = companion;
-        this.level = companion.level();
+    public FollowPlayerGoal(AmigoEntity amigoEntity, double pSpeedModifier, float pStartDistance, float pStopDistance, boolean pCanFly) {
+        this.amigoEntity = amigoEntity;
+        this.level = amigoEntity.level();
         this.speedModifier = pSpeedModifier;
-        this.navigation = companion.getNavigation();
+        this.navigation = amigoEntity.getNavigation();
         this.startDistance = pStartDistance;
         this.stopDistance = pStopDistance;
         this.canFly = pCanFly;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-        if (!(companion.getNavigation() instanceof GroundPathNavigation) && !(companion.getNavigation() instanceof FlyingPathNavigation)) {
+        if (!(amigoEntity.getNavigation() instanceof GroundPathNavigation) && !(amigoEntity.getNavigation() instanceof FlyingPathNavigation)) {
             throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
         }
     }
 
     public boolean canUse() {
-        LivingEntity livingentity = this.companion.getPlayer();
+        LivingEntity livingentity = this.amigoEntity.getPlayer();
         if (livingentity == null) {
             return false;
         } else if (livingentity.isSpectator()) {
             return false;
         } else if (this.unableToMove()) {
             return false;
-        } else if (!this.companion.isFollowing()) {
+        } else if (!this.amigoEntity.isFollowing()) {
             return false;
-        } else if (this.companion.distanceToSqr(livingentity) < (double)(this.startDistance * this.startDistance)) {
+        } else if (this.amigoEntity.distanceToSqr(livingentity) < (double)(this.startDistance * this.startDistance)) {
+            return false;
+        } else if (this.amigoEntity.isEating()) {
             return false;
         } else {
             this.player = livingentity;
@@ -69,24 +71,25 @@ public class FollowPlayerGoal extends Goal {
         } else if (this.unableToMove()) {
             return false;
         } else {
-            return !(this.companion.distanceToSqr(this.player) <= (double)(this.stopDistance * this.stopDistance));
+            return !(this.amigoEntity.distanceToSqr(this.player) <= (double)(this.stopDistance * this.stopDistance));
         }
     }
 
     private boolean unableToMove() {
-        return this.companion.isPassenger();
+        return this.amigoEntity.isPassenger();
     }
 
     public void start() {
+        this.amigoEntity.setIsFarming(false);
         this.timeToRecalcPath = 0;
-        this.oldWaterCost = this.companion.getPathfindingMalus(BlockPathTypes.WATER);
-        this.companion.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
+        this.oldWaterCost = this.amigoEntity.getPathfindingMalus(BlockPathTypes.WATER);
+        this.amigoEntity.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
     }
 
     public void stop() {
         this.player = null;
         this.navigation.stop();
-        this.companion.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+        this.amigoEntity.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
     }
 
     public void tick() {
@@ -97,10 +100,10 @@ public class FollowPlayerGoal extends Goal {
         else {
             finalSpeed = this.speedModifier;
         }
-        this.companion.getLookControl().setLookAt(this.player, 10.0F, (float)this.companion.getMaxHeadXRot());
+        this.amigoEntity.getLookControl().setLookAt(this.player, 10.0F, (float)this.amigoEntity.getMaxHeadXRot());
         if (--this.timeToRecalcPath <= 0) {
             this.timeToRecalcPath = this.adjustedTickDelay(10);
-            if (this.companion.distanceToSqr(this.player) >= 144.0) {
+            if (this.amigoEntity.distanceToSqr(this.player) >= 144.0) {
                 this.teleportToPlayer();
             } else {
                 this.navigation.moveTo(this.player, finalSpeed);
@@ -110,9 +113,9 @@ public class FollowPlayerGoal extends Goal {
 
     private void teleportToPlayer() {
         BlockPos blockpos = this.player.blockPosition();
-        this.companion.getNavigation().stop();
+        this.amigoEntity.getNavigation().stop();
 
-        for(int i = 0; i < 10; ++i) {
+        for(int i = 0; i < 20; ++i) {
             int j = this.randomIntInclusive(-3, 3);
             int k = this.randomIntInclusive(-1, 1);
             int l = this.randomIntInclusive(-3, 3);
@@ -130,7 +133,7 @@ public class FollowPlayerGoal extends Goal {
         } else if (!this.canTeleportTo(new BlockPos(pX, pY, pZ))) {
             return false;
         } else {
-            this.companion.moveTo((double)pX + 0.5, (double)pY, (double)pZ + 0.5, this.companion.getYRot(), this.companion.getXRot());
+            this.amigoEntity.moveTo((double)pX + 0.5, (double)pY, (double)pZ + 0.5, this.amigoEntity.getYRot(), this.amigoEntity.getXRot());
             this.navigation.stop();
             return true;
         }
@@ -145,13 +148,13 @@ public class FollowPlayerGoal extends Goal {
             if (!this.canFly && blockstate.getBlock() instanceof LeavesBlock) {
                 return false;
             } else {
-                BlockPos blockpos = pPos.subtract(this.companion.blockPosition());
-                return this.level.noCollision(this.companion, this.companion.getBoundingBox().move(blockpos));
+                BlockPos blockpos = pPos.subtract(this.amigoEntity.blockPosition());
+                return this.level.noCollision(this.amigoEntity, this.amigoEntity.getBoundingBox().move(blockpos));
             }
         }
     }
 
     private int randomIntInclusive(int pMin, int pMax) {
-        return this.companion.getRandom().nextInt(pMax - pMin + 1) + pMin;
+        return this.amigoEntity.getRandom().nextInt(pMax - pMin + 1) + pMin;
     }
 }

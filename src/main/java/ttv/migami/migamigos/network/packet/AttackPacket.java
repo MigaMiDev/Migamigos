@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.function.Supplier;
 
@@ -30,8 +30,8 @@ public class AttackPacket {
             if (player != null) {
                 Level world = player.level();
                 Entity entity = world.getEntity(msg.entityId);
-                if (entity instanceof Companion companion) {
-                    companion.basicAttack();
+                if (entity instanceof AmigoEntity amigoEntity) {
+                    amigoEntity.basicAttack();
                 }
             }
         });

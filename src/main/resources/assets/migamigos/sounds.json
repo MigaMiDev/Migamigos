@@ -1,17 +1,65 @@
 {
-  "companion.backpack_opening": {
-    "subtitle": "subtitle.migamigos.companion.backpack_opening",
+  "amigo.backpack_opening": {
+    "subtitle": "subtitle.migamigos.amigo.backpack_opening",
     "sounds": [
       {
-        "name": "migamigos:companion/backpack_opening"
+        "name": "migamigos:amigo/backpack_opening"
       }
     ]
   },
-  "companion.backpack_closing": {
-    "subtitle": "subtitle.migamigos.companion.backpack_closing",
+  "amigo.backpack_closing": {
+    "subtitle": "subtitle.migamigos.amigo.backpack_closing",
     "sounds": [
       {
-        "name": "migamigos:companion/backpack_closing"
+        "name": "migamigos:amigo/backpack_closing"
+      }
+    ]
+  },
+  "amigo.cocogoat.chime": {
+    "sounds": [
+      {
+        "name": "migamigos:amigo/cocogoat/chime1",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/cocogoat/chime2",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/cocogoat/chime3",
+        "stream": true
+      }
+    ]
+  },
+  "amigo.wavelyn.chime": {
+    "sounds": [
+      {
+        "name": "migamigos:amigo/wavelyn/chime1",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/wavelyn/chime2",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/wavelyn/chime3",
+        "stream": true
+      }
+    ]
+  },
+  "amigo.claymore.chime": {
+    "sounds": [
+      {
+        "name": "migamigos:amigo/claymore/chime1",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/claymore/chime2",
+        "stream": true
+      },
+      {
+        "name": "migamigos:amigo/claymore/chime3",
+        "stream": true
       }
     ]
   }

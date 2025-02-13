@@ -7,8 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import ttv.migami.migamigos.Reference;
-import ttv.migami.migamigos.network.message.C2SCloseCompanionInventory;
-import ttv.migami.migamigos.network.message.C2SCompanionSwitchAttitude;
+import ttv.migami.migamigos.network.message.C2SAmigoSwitchAttitude;
+import ttv.migami.migamigos.network.message.C2SCloseAmigoInventory;
+import ttv.migami.migamigos.network.message.C2SMessageToggleArmorPiece;
+import ttv.migami.migamigos.network.message.S2CMessageUpdateAmigos;
 import ttv.migami.migamigos.network.packet.AttackPacket;
 import ttv.migami.migamigos.network.packet.AttackStop;
 import ttv.migami.migamigos.network.packet.SpecialAttackPacket;
@@ -21,9 +23,10 @@ public class PacketHandler
     public static void init()
     {
         playChannel = FrameworkAPI.createNetworkBuilder(new ResourceLocation(Reference.MOD_ID, "play"), 1)
-                .registerPlayMessage(C2SCloseCompanionInventory.class, MessageDirection.PLAY_SERVER_BOUND)
-                .registerPlayMessage(C2SCompanionSwitchAttitude.class, MessageDirection.PLAY_SERVER_BOUND)
-                //.registerPlayMessage(C2SCompanionBasicAttack.class, MessageDirection.PLAY_SERVER_BOUND)
+                .registerPlayMessage(S2CMessageUpdateAmigos.class, MessageDirection.PLAY_CLIENT_BOUND)
+                .registerPlayMessage(C2SCloseAmigoInventory.class, MessageDirection.PLAY_SERVER_BOUND)
+                .registerPlayMessage(C2SAmigoSwitchAttitude.class, MessageDirection.PLAY_SERVER_BOUND)
+                .registerPlayMessage(C2SMessageToggleArmorPiece.class, MessageDirection.PLAY_SERVER_BOUND)
                 .build();
     }
 

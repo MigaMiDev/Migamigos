@@ -1,0 +1,29 @@
+{
+  "attackCombo": {
+    "cooldown": 100,
+    "name": "epic_sword_combo",
+    "power": 4.0,
+    "recoil": 0.5
+  },
+  "attackSpecial": {
+    "cooldown": 400,
+    "name": "rock_armor",
+    "power": 3.0
+  },
+  "attackUltimate": {
+    "cooldown": 1200,
+    "name": "ground_them",
+    "power": 4.0
+  },
+  "general": {
+    "armor": 10.0,
+    "favoriteItem": "minecraft:cooked_salmon",
+    "healingTimer": 70,
+    "health": 40.0,
+    "name": "claymore",
+    "recruitingChance": 0.25,
+    "renderSize": 0.95,
+    "speed": 0.19,
+    "tolerance": 3
+  }
+}

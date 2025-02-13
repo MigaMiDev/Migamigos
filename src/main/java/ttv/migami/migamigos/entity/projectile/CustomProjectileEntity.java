@@ -2,17 +2,20 @@ package ttv.migami.migamigos.entity.projectile;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.*;
@@ -20,9 +23,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.jetbrains.annotations.Nullable;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.summon.SummonEntity;
-import ttv.migami.migamigos.event.CompanionProjectileHitEvent;
+import ttv.migami.migamigos.event.AmigoProjectileHitEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,33 +38,32 @@ import java.util.function.Predicate;
 public class CustomProjectileEntity extends Entity implements IEntityAdditionalSpawnData {
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator();
 
-    public UUID playerUUID;
-    public int ownerID;
-    public LivingEntity owner;
-    public boolean collateral = false;
-    public boolean affectedByGravity = false;
-    public double modifiedGravity = -0.04;
-    public int life = 100;
-    public float damage = 51.0F;
-    public boolean checkForCollisions = false;
-    public double speed = 3.5D;
+    protected UUID playerUUID;
+    protected int ownerID;
+    protected LivingEntity owner;
+    protected boolean collateral = false;
+    protected boolean affectedByGravity = false;
+    protected double modifiedGravity = -0.04;
+    protected int life = 100;
+    protected float power = 5.0F;
+    protected boolean checkForCollisions = false;
 
     public CustomProjectileEntity(EntityType<?> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    public CustomProjectileEntity(EntityType<?> pEntityType, Level pLevel, LivingEntity owner) {
+    public CustomProjectileEntity(EntityType<?> pEntityType, Level pLevel, LivingEntity owner, float power, float speed) {
         this(pEntityType, pLevel);
-        if (owner instanceof Companion companion && companion.getPlayer() != null) {
-            this.playerUUID = companion.getPlayer().getUUID();
+        if (owner instanceof AmigoEntity amigoEntity && amigoEntity.getPlayer() != null) {
+            this.playerUUID = amigoEntity.getPlayer().getUUID();
         }
         this.ownerID = owner.getId();
         this.owner = owner;
         this.life = 60;
+        this.power = power;
 
         /* Get speed and set motion */
         Vec3 dir = this.getDirection(owner);
-        double speed = this.speed;
         this.setDeltaMovement(dir.x * speed, dir.y * speed, dir.z * speed);
         this.updateHeading();
 
@@ -137,13 +139,30 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
 
             for (Entity entity : nearbyEntities) {
                 if (entity != this && entity != this.owner && this.getBoundingBox().intersects(entity.getBoundingBox())) {
-                    this.onHitEntity(entity);
 
-                    if (!this.collateral) {
-                        this.remove(RemovalReason.KILLED);
+                    boolean doHit = true;
+
+                    if (entity instanceof AmigoEntity target &&
+                            target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
+                        doHit = false;
+                    }
+                    if (!(entity instanceof Enemy) && this.owner instanceof AmigoEntity amigoEntity && !entity.equals(amigoEntity.getTarget())) {
+                        doHit = false;
                     }
 
-                    entity.invulnerableTime = 0;
+                    if (entity instanceof Villager) {
+                        return;
+                    }
+
+                    if (doHit) {
+                        this.onHitEntity(entity);
+
+                        if (!this.collateral) {
+                            this.remove(RemovalReason.KILLED);
+                        }
+
+                        entity.invulnerableTime = 0;
+                    }
                 }
             }
         }
@@ -187,7 +206,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
 
     protected void onHit(HitResult result, Vec3 startVec, Vec3 endVec)
     {
-        if(MinecraftForge.EVENT_BUS.post(new CompanionProjectileHitEvent(result, this)))
+        if(MinecraftForge.EVENT_BUS.post(new AmigoProjectileHitEvent(result, this)))
         {
             return;
         }
@@ -202,10 +221,13 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
             Vec3 hitVec = result.getLocation();
             BlockPos pos = blockHitResult.getBlockPos();
             BlockState state = this.level().getBlockState(pos);
-            Block block = state.getBlock();
+
+            if(!state.canBeReplaced())
+            {
+                this.remove(RemovalReason.KILLED);
+            }
 
             this.onHitBlock(state, pos, blockHitResult.getDirection(), hitVec.x, hitVec.y, hitVec.z);
-
         }
 
         if(result instanceof EntityHitResult entityHitResult)
@@ -227,7 +249,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
                 }
             }
 
-            if (entity instanceof Companion target &&
+            if (entity instanceof AmigoEntity target &&
                     target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
                 return;
             }
@@ -237,6 +259,14 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
             /*if (entity instanceof SummonEntity summon && summon.getPlayerUUID().isPresent() &&
                     summon.getPlayerUUID().get() == this.playerUUID) {*/
             if (entity instanceof SummonEntity) {
+                return;
+            }
+
+            if (!(entity instanceof Enemy) && this.owner instanceof AmigoEntity amigoEntity && !entity.equals(amigoEntity.getTarget())) {
+                return;
+            }
+
+            if (entity instanceof Villager) {
                 return;
             }
 
@@ -293,8 +323,11 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
 
     protected void onHitEntity(Entity entity)
     {
-        entity.hurt(this.damageSources().mobProjectile(this, this.owner), this.damage);
+        entity.hurt(this.damageSources().mobProjectile(this, this.owner), this.power);
         entity.invulnerableTime = 0;
+        if (this.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR, entity.getX(), entity.getY(), entity.getZ(), ((int) this.power / 2), entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2, 0.1);
+        }
     }
 
     protected void onHitBlock(BlockState state, BlockPos pos, Direction face, double x, double y, double z)
@@ -501,7 +534,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
     {
         this.modifiedGravity = compound.getDouble("ModifiedGravity");
         this.life = compound.getInt("MaxLife");
-        this.damage = compound.getFloat("Damage");
+        this.power = compound.getFloat("Damage");
         this.playerUUID = compound.getUUID("Owner");
     }
 
@@ -510,7 +543,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
     {
         compound.putDouble("ModifiedGravity", this.modifiedGravity);
         compound.putInt("MaxLife", this.life);
-        compound.putFloat("Damage", this.damage);
+        compound.putFloat("Damage", this.power);
         compound.putUUID("Owner", this.playerUUID);
     }
 
@@ -520,7 +553,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
         buffer.writeInt(this.ownerID);
         buffer.writeDouble(this.modifiedGravity);
         buffer.writeVarInt(this.life);
-        buffer.writeFloat(this.damage);
+        buffer.writeFloat(this.power);
         buffer.writeUUID(this.playerUUID);
     }
 
@@ -530,7 +563,7 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
         this.ownerID = buffer.readInt();
         this.modifiedGravity = buffer.readDouble();
         this.life = buffer.readVarInt();
-        this.damage = buffer.readFloat();
+        this.power = buffer.readFloat();
         this.playerUUID = buffer.readUUID();
     }
 }

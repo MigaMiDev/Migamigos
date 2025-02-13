@@ -16,6 +16,8 @@ import ttv.migami.migamigos.init.ModParticleTypes;
 
 import java.util.List;
 
+import static ttv.migami.migamigos.common.network.ServerPlayHandler.sendParticlesToAll;
+
 public class IceLotus extends SummonEntity {
     private static final int DAMAGE_RADIUS = 3;
     private static final int PARTICLE_RADIUS = 3;
@@ -26,8 +28,8 @@ public class IceLotus extends SummonEntity {
         super(entityType, world);
     }
 
-    public IceLotus(Level level, LivingEntity owner) {
-        super(ModEntities.ICE_LOTUS.get(), level, owner);
+    public IceLotus(Level level, LivingEntity owner, float power) {
+        super(ModEntities.ICE_LOTUS.get(), level, owner, power);
         this.noPhysics = true;
         this.noCulling = true;
         this.setNoGravity(true);
@@ -37,7 +39,7 @@ public class IceLotus extends SummonEntity {
     @Override
     public void tick() {
         super.tick();
-        
+
         //this.setYRot(this.getYRot() + 10.0F);
 
         if (this.tickCount % DAMAGE_INTERVAL == 0 || this.tickCount <= 1) {
@@ -45,6 +47,21 @@ public class IceLotus extends SummonEntity {
         }
 
         summonParticleRing();
+        if (this.tickCount % 3 == 0) {
+            if (this.level() instanceof ServerLevel serverLevel) {
+                sendParticlesToAll(
+                        serverLevel,
+                        ModParticleTypes.SMALL_FREEZE_BREEZE.get(),
+                        true,
+                        this.getX(),
+                        this.getY() + 0.1,
+                        this.getZ(),
+                        1,
+                        this.getBbWidth() + (double) PARTICLE_RADIUS / 2, this.getBbHeight(), this.getBbWidth() + (double) PARTICLE_RADIUS / 2,
+                        0.1
+                );
+            }
+        }
 
         if (this.tickCount >= LIFETIME) {
             this.discard();
@@ -55,16 +72,16 @@ public class IceLotus extends SummonEntity {
         List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class,
             this.getBoundingBox().inflate(DAMAGE_RADIUS));
 
-        this.level().playSound(null, this, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+        this.level().playSound(null, this.getOnPos(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
         for (LivingEntity entity : entities) {
-            this.hurt(entity, 5F, this.damageSources().magic());
+            this.hurt(entity, this.power, this.damageSources().magic());
             this.mobEffect(entity, MobEffects.MOVEMENT_SLOWDOWN, DAMAGE_INTERVAL, 1, false, true);
             if (this.level() instanceof ServerLevel serverLevel) {
                 for (int i = 0; i < 5; i++) {
                     serverLevel.sendParticles(ModParticleTypes.FROST_GLINT.get(),
-                            this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth() * 2,
+                            this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth() * 3,
                             this.getY() + random.nextDouble() * this.getBbHeight(),
-                            this.getZ() + (random.nextDouble() - 0.5) * this.getBbWidth() * 2,
+                            this.getZ() + (random.nextDouble() - 0.5) * this.getBbWidth() * 3,
                             1, 0, 0, 0, 0.1);
                 }
             }

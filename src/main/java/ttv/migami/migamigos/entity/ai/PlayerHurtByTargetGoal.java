@@ -3,24 +3,24 @@ package ttv.migami.migamigos.entity.ai;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.EnumSet;
 
 public class PlayerHurtByTargetGoal extends TargetGoal {
-    private final Companion companion;
+    private final AmigoEntity amigoEntity;
     private LivingEntity playerLastHurtBy;
     private int timestamp;
 
-    public PlayerHurtByTargetGoal(Companion companion) {
-        super(companion, false);
-        this.companion = companion;
+    public PlayerHurtByTargetGoal(AmigoEntity amigoEntity) {
+        super(amigoEntity, false);
+        this.amigoEntity = amigoEntity;
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     public boolean canUse() {
-        if (this.companion.hasPlayer()) {
-            LivingEntity livingentity = this.companion.getPlayer();
+        if (this.amigoEntity.hasPlayer()) {
+            LivingEntity livingentity = this.amigoEntity.getPlayer();
             if (livingentity == null) {
                 return false;
             } else {
@@ -29,12 +29,12 @@ public class PlayerHurtByTargetGoal extends TargetGoal {
                     return false;
                 }
 
-                if (!this.companion.isFocusingOnMainTarget() && this.companion.getTarget() != null) {
+                if (!this.amigoEntity.isFocusingOnMainTarget() && this.amigoEntity.getTarget() != null) {
                     return false;
                 }
 
                 int i = livingentity.getLastHurtByMobTimestamp();
-                return i != this.timestamp && this.canAttack(this.playerLastHurtBy, TargetingConditions.DEFAULT) && this.companion.wantsToAttack(this.playerLastHurtBy, livingentity);
+                return i != this.timestamp && this.canAttack(this.playerLastHurtBy, TargetingConditions.DEFAULT) && this.amigoEntity.wantsToAttack(this.playerLastHurtBy, livingentity);
             }
         } else {
             return false;
@@ -42,12 +42,12 @@ public class PlayerHurtByTargetGoal extends TargetGoal {
     }
 
     public void start() {
-        this.companion.setTarget(this.playerLastHurtBy);
-        LivingEntity livingentity = this.companion.getPlayer();
+        this.amigoEntity.setTarget(this.playerLastHurtBy);
+        LivingEntity livingentity = this.amigoEntity.getPlayer();
         if (livingentity != null) {
             this.timestamp = livingentity.getLastHurtByMobTimestamp();
         }
-        this.companion.setAttacking(true);
+        this.amigoEntity.setAttacking(true);
         super.start();
     }
 }

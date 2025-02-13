@@ -5,10 +5,10 @@ license="GNU GPLv3"
 [[mods]]
 modId="migamigos"
 version="0.0.1"
-displayName="My Companion"
+displayName="Migamigos"
 authors="MigaMi"
-credits="MrCrayfish"
-description="Companions that feel alive!"
+credits=""
+description="Amigos that feel alive!"
 
 [[dependencies.migamigos]]
     modId="forge"

@@ -1,0 +1,19 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:meadow",
+    "minecraft:stony_peaks",
+    "minecraft:windswept_hills",
+    "minecraft:windswept_forest",
+    "minecraft:windswept_gravelly_hills",
+    "minecraft:cherry_grove"
+  ],
+  "spawners": [
+    {
+      "type": "migamigos:cocogoat",
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

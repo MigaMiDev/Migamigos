@@ -1,0 +1,30 @@
+{
+  "attackCombo": {
+    "cooldown": 100,
+    "name": "soul_fire_blast",
+    "power": 5.0,
+    "recoil": -0.8
+  },
+  "attackSpecial": {
+    "cooldown": 100,
+    "name": "warmth_push",
+    "power": 5.0
+  },
+  "attackUltimate": {
+    "cooldown": 1800,
+    "name": "smite_storm",
+    "power": 8.0,
+    "recoil": -0.5
+  },
+  "general": {
+    "armor": 2.0,
+    "favoriteItem": "minecraft:cookie",
+    "healingTimer": 40,
+    "health": 25.0,
+    "name": "wavelyn",
+    "recruitingChance": 0.25,
+    "renderSize": 0.9,
+    "speed": 0.225,
+    "tolerance": 5
+  }
+}

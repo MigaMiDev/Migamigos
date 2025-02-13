@@ -12,9 +12,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -23,22 +25,24 @@ import java.util.function.Predicate;
 public class SummonEntity extends Mob implements IEntityAdditionalSpawnData {
     private static final Predicate<Entity> ATTACK_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator();
     private static final EntityDataAccessor<Optional<UUID>> DATA_PLAYER_UUID = SynchedEntityData.defineId(SummonEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    public UUID playerUUID;
-    public int ownerID;
-    public LivingEntity owner;
+    protected UUID playerUUID;
+    protected int ownerID;
+    protected LivingEntity owner;
+    protected float power;
 
     public SummonEntity(EntityType<? extends Mob> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
-    public SummonEntity(EntityType<? extends Mob> pEntityType, Level pLevel, LivingEntity owner) {
+    public SummonEntity(EntityType<? extends Mob> pEntityType, Level pLevel, LivingEntity owner, float power) {
         this(pEntityType, pLevel);
-        if (owner instanceof Companion companion && companion.getPlayer() != null) {
-            this.playerUUID = companion.getPlayer().getUUID();
+        if (owner instanceof AmigoEntity amigoEntity && amigoEntity.getPlayer() != null) {
+            this.playerUUID = amigoEntity.getPlayer().getUUID();
             this.setPlayerUUID(Optional.of(this.playerUUID));
         }
         this.ownerID = owner.getId();
         this.owner = owner;
+        this.power = power;
     }
 
     protected void hurt(LivingEntity entity, float damage, DamageSource damageSource) {
@@ -49,14 +53,21 @@ public class SummonEntity extends Mob implements IEntityAdditionalSpawnData {
         {
             return;
         }
-        if (entity instanceof Companion target &&
+        if (entity instanceof AmigoEntity target &&
                 target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
             return;
         }
         if (entity.getUUID() == this.playerUUID) {
             return;
         }
+        if (!(entity instanceof Enemy) && this.owner instanceof AmigoEntity amigoEntity && !entity.equals(amigoEntity.getTarget())) {
+            return;
+        }
+        if (entity instanceof Villager) {
+            return;
+        }
         entity.hurt(damageSource, damage);
+        entity.invulnerableTime = 0;
     }
 
     protected void mobEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier, boolean ambient, boolean hideParticles) {
@@ -67,7 +78,7 @@ public class SummonEntity extends Mob implements IEntityAdditionalSpawnData {
         {
             return;
         }
-        if (entity instanceof Companion target &&
+        if (entity instanceof AmigoEntity target &&
                 target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
             return;
         }

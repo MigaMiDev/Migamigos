@@ -2,36 +2,32 @@ package ttv.migami.migamigos.entity.client.summon;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import ttv.migami.migamigos.Reference;
-import ttv.migami.migamigos.entity.summon.IceShower;
+import ttv.migami.migamigos.entity.summon.HailShower;
 
 @OnlyIn(Dist.CLIENT)
-public class IceShowerRenderer<T extends IceShower> extends EntityRenderer<T> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/projectile/generic_arrow.png");
+public class IceShowerRenderer<T extends HailShower> extends EntityRenderer<T> {
+    private static final ResourceLocation TEXTURE = new ResourceLocation("minecraft:textures/misc/white.png");
 
     public IceShowerRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(IceShower arrow) {
+    public ResourceLocation getTextureLocation(HailShower arrow) {
         return TEXTURE;
     }
 
     public void render(T pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
-        pPoseStack.pushPose();
+        /*pPoseStack.pushPose();
         pPoseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pPartialTicks, pEntity.yRotO, pEntity.getYRot()) - 90.0F));
         pPoseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pPartialTicks, pEntity.xRotO, pEntity.getXRot())));
 
@@ -59,7 +55,7 @@ public class IceShowerRenderer<T extends IceShower> extends EntityRenderer<T> {
             this.vertex(matrix4f, matrix3f, vertexconsumer, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, pPackedLight);
         }
 
-        pPoseStack.popPose();
+        pPoseStack.popPose();*/
         super.render(pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
     }
 

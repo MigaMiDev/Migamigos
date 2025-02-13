@@ -11,8 +11,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.Reference;
-import ttv.migami.migamigos.common.container.CompanionContainer;
-import ttv.migami.migamigos.entity.Companion;
+import ttv.migami.migamigos.common.container.AmigoContainer;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -20,23 +20,23 @@ import java.util.UUID;
 
 public class ModContainers {
     public static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Reference.MOD_ID);
-    public static final RegistryObject<MenuType<CompanionContainer>> COMPANION_CONTAINER;
+    public static final RegistryObject<MenuType<AmigoContainer>> AMIGO_CONTAINER;
 
     private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> register(String id, MenuType.MenuSupplier<T> factory) {
         return REGISTER.register(id, () -> new MenuType<>(factory, FeatureFlags.DEFAULT_FLAGS));
     }
 
     static {
-        COMPANION_CONTAINER = REGISTER.register("companion_container", () -> {
+        AMIGO_CONTAINER = REGISTER.register("amigo_container", () -> {
             return IForgeMenuType.create((windowId, inv, data) -> {
                 try {
                     UUID workerId = data.readUUID();
-                    Migamigos.LOGGER.info("{} is opening Companion container for {}", inv.player.getDisplayName().getString(), workerId);
-                    Companion companion = getCompanionByUUID(inv.player, workerId);
-                    Migamigos.LOGGER.info("Companion is {}", companion);
-                    return companion == null ? null : new CompanionContainer(windowId, inv, companion);
+                    Migamigos.LOGGER.info("{} is opening Amigo container for {}", inv.player.getDisplayName().getString(), workerId);
+                    AmigoEntity amigoEntity = getAmigoByUUID(inv.player, workerId);
+                    Migamigos.LOGGER.info("Amigo is {}", amigoEntity);
+                    return amigoEntity == null ? null : new AmigoContainer(windowId, inv, amigoEntity);
                 } catch (Exception var5) {
-                    Migamigos.LOGGER.error("Error in companion_container: ");
+                    Migamigos.LOGGER.error("Error in amigo_container: ");
                     Migamigos.LOGGER.error(var5.getMessage());
                     Migamigos.LOGGER.error(Arrays.toString(var5.getStackTrace()));
                     return null;
@@ -46,9 +46,9 @@ public class ModContainers {
     }
 
     @Nullable
-    public static Companion getCompanionByUUID(Player player, UUID uuid) {
+    public static AmigoEntity getAmigoByUUID(Player player, UUID uuid) {
         double distance = 10.0;
-        return player.getCommandSenderWorld().getEntitiesOfClass(Companion.class, new AABB(player.getX() - distance, player.getY() - distance, player.getZ() - distance, player.getX() + distance, player.getY() + distance, player.getZ() + distance), (entity) -> {
+        return player.getCommandSenderWorld().getEntitiesOfClass(AmigoEntity.class, new AABB(player.getX() - distance, player.getY() - distance, player.getZ() - distance, player.getX() + distance, player.getY() + distance, player.getZ() + distance), (entity) -> {
             return entity.getUUID().equals(uuid);
         }).stream().findAny().orElse(null);
     }

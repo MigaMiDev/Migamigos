@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:forest",
+    "minecraft:flower_forest",
+    "minecraft:taiga",
+    "minecraft:birch_forest",
+    "minecraft:old_growth_birch_forest"
+  ],
+  "spawners": [
+    {
+      "type": "migamigos:claymore",
+      "weight": 1,
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ]
+}

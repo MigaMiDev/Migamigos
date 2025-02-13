@@ -3,41 +3,44 @@ package ttv.migami.migamigos.entity.ai;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import ttv.migami.migamigos.entity.Companion;
+import net.minecraft.world.entity.npc.Villager;
+import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.EnumSet;
 
 public class PlayerHurtTargetGoal extends TargetGoal {
-    private final Companion companion;
+    private final AmigoEntity amigoEntity;
     private LivingEntity ownerLastHurt;
     private int timestamp;
 
-    public PlayerHurtTargetGoal(Companion companion) {
-        super(companion, false);
-        this.companion = companion;
+    public PlayerHurtTargetGoal(AmigoEntity amigoEntity) {
+        super(amigoEntity, false);
+        this.amigoEntity = amigoEntity;
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     public boolean canUse() {
-        if (this.companion.hasPlayer()) {
-            LivingEntity livingentity = this.companion.getPlayer();
+        if (this.amigoEntity.hasPlayer()) {
+            LivingEntity livingentity = this.amigoEntity.getPlayer();
             if (livingentity == null) {
                 return false;
             } else {
                 this.ownerLastHurt = livingentity.getLastHurtMob();
-                if (this.ownerLastHurt instanceof Companion) {
+                if (this.ownerLastHurt instanceof AmigoEntity) {
                     return false;
                 }
                 if (this.ownerLastHurt != null && this.ownerLastHurt.isDeadOrDying()) {
                     return false;
                 }
-
-                if (!this.companion.isFocusingOnMainTarget() && this.companion.getTarget() != null) {
+                if (this.ownerLastHurt instanceof Villager) {
+                    return false;
+                }
+                if (!this.amigoEntity.isFocusingOnMainTarget() && this.amigoEntity.getTarget() != null) {
                     return false;
                 }
 
                 int i = livingentity.getLastHurtMobTimestamp();
-                return i != this.timestamp && this.canAttack(this.ownerLastHurt, TargetingConditions.DEFAULT) && this.companion.wantsToAttack(this.ownerLastHurt, livingentity);
+                return i != this.timestamp && this.canAttack(this.ownerLastHurt, TargetingConditions.DEFAULT) && this.amigoEntity.wantsToAttack(this.ownerLastHurt, livingentity);
             }
         } else {
             return false;
@@ -45,12 +48,12 @@ public class PlayerHurtTargetGoal extends TargetGoal {
     }
 
     public void start() {
-        this.companion.setTarget(this.ownerLastHurt);
-        LivingEntity livingentity = this.companion.getPlayer();
+        this.amigoEntity.setTarget(this.ownerLastHurt);
+        LivingEntity livingentity = this.amigoEntity.getPlayer();
         if (livingentity != null) {
             this.timestamp = livingentity.getLastHurtMobTimestamp();
         }
-        this.companion.setAttacking(true);
+        this.amigoEntity.setAttacking(true);
 
         super.start();
     }

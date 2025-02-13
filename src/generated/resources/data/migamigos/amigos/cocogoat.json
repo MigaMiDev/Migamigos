@@ -1,0 +1,30 @@
+{
+  "attackCombo": {
+    "cooldown": 160,
+    "name": "frost_arrow_flurry",
+    "power": 3.5,
+    "recoil": -0.5
+  },
+  "attackSpecial": {
+    "cooldown": 400,
+    "name": "ice_lotus",
+    "power": 5.0,
+    "recoil": -2.25
+  },
+  "attackUltimate": {
+    "cooldown": 2400,
+    "name": "hail_shower",
+    "power": 4.0
+  },
+  "general": {
+    "armor": 3.0,
+    "favoriteItem": "minecraft:azure_bluet",
+    "healingTimer": 60,
+    "health": 30.0,
+    "name": "cocogoat",
+    "recruitingChance": 0.25,
+    "renderSize": 0.9,
+    "speed": 0.2,
+    "tolerance": 3
+  }
+}
