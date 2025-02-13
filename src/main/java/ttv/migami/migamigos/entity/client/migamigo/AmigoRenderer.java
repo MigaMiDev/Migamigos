@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
-import net.minecraftforge.registries.ForgeRegistries;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
@@ -110,7 +109,13 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
             @Nullable
             @Override
             protected ItemStack getStackForBone(GeoBone bone, AmigoEntity animatable) {
-                if (animatable.isEating()) {
+                if (bone.getName().equals(RIGHT_HAND)) {
+                    return animatable.getMainHandItem();
+                }
+                if (bone.getName().equals(LEFT_HAND)) {
+                    return animatable.getOffhandItem();
+                }
+                /*if (animatable.isEating()) {
                     Item food = Items.AIR;
                     if (animatable.getAmigo() != null) {
                         food = ForgeRegistries.ITEMS.getValue(animatable.getAmigo().getGeneral().getFavoriteItem());
@@ -122,18 +127,20 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                     if (bone.getName().equals(RIGHT_HAND)) {
                         return Items.IRON_HOE.getDefaultInstance();
                     }
-                } else {
+                } else */{
                     boolean isMainHandBow = AmigoRenderer.this.mainHandItem.getItem() instanceof BowItem;
 
-                    return switch (bone.getName()) {
-                        case LEFT_HAND -> isMainHandBow ?
-                                AmigoRenderer.this.mainHandItem :
-                                (animatable.isLeftHanded() ? AmigoRenderer.this.mainHandItem : AmigoRenderer.this.offhandItem);
-                        case RIGHT_HAND -> isMainHandBow ?
-                                null :
-                                (animatable.isLeftHanded() ? AmigoRenderer.this.offhandItem : AmigoRenderer.this.mainHandItem);
-                        default -> null;
-                    };
+                    if (isMainHandBow) {
+                        return switch (bone.getName()) {
+                            case LEFT_HAND -> isMainHandBow ?
+                                    AmigoRenderer.this.mainHandItem :
+                                    (animatable.isLeftHanded() ? AmigoRenderer.this.mainHandItem : AmigoRenderer.this.offhandItem);
+                            case RIGHT_HAND -> isMainHandBow ?
+                                    null :
+                                    (animatable.isLeftHanded() ? AmigoRenderer.this.offhandItem : AmigoRenderer.this.mainHandItem);
+                            default -> null;
+                        };
+                    }
                 }
                 return null;
             }

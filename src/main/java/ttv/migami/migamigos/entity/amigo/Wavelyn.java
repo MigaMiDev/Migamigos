@@ -9,7 +9,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
 public class Wavelyn extends AmigoEntity {
     public Wavelyn(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.ENCHANTED_BOOK));
+        this.setDefaultItem(Items.ENCHANTED_BOOK);
         this.chime = ModSounds.WAVELYN_CHIME.get();
     }
 

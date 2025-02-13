@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +23,7 @@ public class AmigoEatGoal extends Goal {
     private int eatCooldown = 0;
     private int eatingProcess = 0;
     private Item favoriteItem = null;
+    private boolean panicEating = false;
 
     private final static int EAT_COOLDOWN = 200;
     private final static int EAT_TIMER = 35;
@@ -51,6 +53,7 @@ public class AmigoEatGoal extends Goal {
         //PanicFood
         if (--this.eatCooldown <= 0 && this.amigoEntity.getHealth() <= this.amigoEntity.getMaxHealth() / 2)
         {
+            this.panicEating = true;
             this.amigoEntity.invulnerableTime = EAT_TIMER * 2;
             this.eatingProcess = EAT_TIMER;
             this.randomEatTimer = randomEatTimer();
@@ -65,9 +68,18 @@ public class AmigoEatGoal extends Goal {
         --this.eatingProcess;
         if (this.shouldTriggerItemUseEffects()) {
             this.amigoEntity.level().playSound(null, this.amigoEntity, SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 0.5F + 0.5F * (float)this.amigoEntity.getRandom().nextInt(2), (this.amigoEntity.getRandom().nextFloat() - this.amigoEntity.getRandom().nextFloat()) * 0.2F + 1.0F);
-            this.spawnItemParticles(favoriteItem.getDefaultInstance(), 5);
+            this.spawnItemParticles(this.amigoEntity.getMainHandItem(), 5);
         }
         if (this.eatingProcess != 0 && this.eatingProcess > 0) {
+            if (this.panicEating) {
+                if (hasGoldenApple()) {
+                    this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, Items.GOLDEN_APPLE.getDefaultInstance());
+                }
+            } else {
+                if (this.favoriteItem != null) {
+                    this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, this.favoriteItem.getDefaultInstance());
+                }
+            }
             this.amigoEntity.setIsEating(true);
             this.amigoEntity.setIsFarming(false);
             this.amigoEntity.getNavigation().stop();
@@ -106,15 +118,16 @@ public class AmigoEatGoal extends Goal {
                 stack.shrink(1);
                 this.amigoEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
                 this.amigoEntity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
-                this.spawnItemParticles(new ItemStack(Items.GOLDEN_APPLE), 5);
                 break;
             }
         }
     }
 
     private void completeMeal() {
-        if (hasGoldenApple()) {
-            consumeGoldenApple();
+        if (this.panicEating) {
+            if (hasGoldenApple()) {
+                consumeGoldenApple();
+            }
         }
         this.amigoEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 120, 1, false, false));
         if (this.amigoEntity.level() instanceof ServerLevel serverLevel) {
@@ -126,6 +139,9 @@ public class AmigoEatGoal extends Goal {
                         1, 0, 0, 0, 0.1);
             }
         }
+        this.panicEating = false;
+        this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, this.amigoEntity.getDefaultItem().getDefaultInstance());
+        this.amigoEntity.setIsEating(false);
     }
 
     private boolean shouldTriggerItemUseEffects() {

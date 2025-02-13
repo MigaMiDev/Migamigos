@@ -5,9 +5,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.CropBlock;
@@ -59,6 +61,7 @@ public class AmigoFarmGoal extends Goal {
 
     @Override
     public void start() {
+        this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_HOE));
         this.amigoEntity.setIsFarming(true);
         if (this.targetCropPos != null) {
             moveToCrop();
@@ -67,6 +70,9 @@ public class AmigoFarmGoal extends Goal {
 
     @Override
     public void stop() {
+        if (this.amigoEntity.getMainHandItem().is(Items.IRON_HOE)) {
+            this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, this.amigoEntity.getDefaultItem().getDefaultInstance());
+        }
         this.amigoEntity.setIsFarming(false);
         this.amigoEntity.setIsHarvesting(false);
     }

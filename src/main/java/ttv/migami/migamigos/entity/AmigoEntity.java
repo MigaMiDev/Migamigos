@@ -35,6 +35,7 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,6 +71,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     private Action currentAction;
     private long comboStartTime;
     protected int emoteTimer = 0;
+    protected Item defaultItem = Items.IRON_SWORD;
 
     protected final static int EMOTE_COOLDOWN = 100;
     protected int emoteCooldown = EMOTE_COOLDOWN;
@@ -166,6 +168,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
 
         this.setLeftHanded(false);
+        this.setItemSlot(EquipmentSlot.MAINHAND, this.getDefaultItem().getDefaultInstance());
 
         if (pEntityType instanceof AmigoEntityType<?> amigoEntityType) {
             this.amigo = amigoEntityType.getAmigo();
@@ -487,6 +490,14 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
                 }
             }
         }
+    }
+
+    public void setDefaultItem(Item item) {
+        this.defaultItem = item;
+    }
+
+    public Item getDefaultItem() {
+        return this.defaultItem;
     }
 
     public void stopAttacks() {

@@ -10,7 +10,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +30,7 @@ import static ttv.migami.migamigos.common.network.ServerPlayHandler.tryToHurt;
 public class Claymore extends AmigoEntity {
     public Claymore(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+        this.setDefaultItem(Items.IRON_SWORD);
         this.chime = ModSounds.CLAYMORE_CHIME.get();
     }
 

@@ -4,10 +4,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.ClimbOnTopOfPowderSnowGoal;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -27,7 +25,7 @@ import java.util.function.Consumer;
 public class Cocogoat extends AmigoEntity {
     public Cocogoat(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+        this.setDefaultItem(Items.BOW);
         this.chime = ModSounds.COCOGOAT_CHIME.get();
     }
 
