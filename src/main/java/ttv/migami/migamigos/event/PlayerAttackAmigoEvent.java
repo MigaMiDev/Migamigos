@@ -16,10 +16,11 @@ public class PlayerAttackAmigoEvent {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingAttack(LivingAttackEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
-            if (event.getEntity() instanceof AmigoEntity amigoEntity && amigoEntity.getPlayer() != null && amigoEntity.getPlayer().equals(player) &&
-                    !Config.COMMON.gameplay.friendlyFire.get()) {
-                amigoEntity.level().playSound(null, amigoEntity, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 0.5F, event.getEntity().getRandom().nextFloat() * 0.1F + 0.9F);
-                event.setCanceled(true);
+            if (event.getEntity() instanceof AmigoEntity amigoEntity && amigoEntity.getPlayer() != null && amigoEntity.getPlayer().equals(player)) {
+                if (!Config.COMMON.gameplay.friendlyFire.get()) {
+                    amigoEntity.level().playSound(null, amigoEntity, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 1.0F, event.getEntity().getRandom().nextFloat() * 0.1F + 0.9F);
+                    event.setCanceled(true);
+                }
             }
         }
     }

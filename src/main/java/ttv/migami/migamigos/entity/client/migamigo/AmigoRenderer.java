@@ -109,6 +109,20 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
             @Nullable
             @Override
             protected ItemStack getStackForBone(GeoBone bone, AmigoEntity animatable) {
+                boolean isMainHandBow = AmigoRenderer.this.mainHandItem.getItem() instanceof BowItem;
+
+                if (isMainHandBow) {
+                    return switch (bone.getName()) {
+                        case LEFT_HAND -> isMainHandBow ?
+                                AmigoRenderer.this.mainHandItem :
+                                (animatable.isLeftHanded() ? AmigoRenderer.this.mainHandItem : AmigoRenderer.this.offhandItem);
+                        case RIGHT_HAND -> isMainHandBow ?
+                                null :
+                                (animatable.isLeftHanded() ? AmigoRenderer.this.offhandItem : AmigoRenderer.this.mainHandItem);
+                        default -> null;
+                    };
+                }
+
                 if (bone.getName().equals(RIGHT_HAND)) {
                     return animatable.getMainHandItem();
                 }
@@ -127,21 +141,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                     if (bone.getName().equals(RIGHT_HAND)) {
                         return Items.IRON_HOE.getDefaultInstance();
                     }
-                } else */{
-                    boolean isMainHandBow = AmigoRenderer.this.mainHandItem.getItem() instanceof BowItem;
-
-                    if (isMainHandBow) {
-                        return switch (bone.getName()) {
-                            case LEFT_HAND -> isMainHandBow ?
-                                    AmigoRenderer.this.mainHandItem :
-                                    (animatable.isLeftHanded() ? AmigoRenderer.this.mainHandItem : AmigoRenderer.this.offhandItem);
-                            case RIGHT_HAND -> isMainHandBow ?
-                                    null :
-                                    (animatable.isLeftHanded() ? AmigoRenderer.this.offhandItem : AmigoRenderer.this.mainHandItem);
-                            default -> null;
-                        };
-                    }
-                }
+                } else */
                 return null;
             }
 

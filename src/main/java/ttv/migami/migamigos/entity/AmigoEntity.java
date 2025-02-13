@@ -228,7 +228,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.goalSelector.addGoal(1, new PersonalSpaceGoal(this));
         //this.goalSelector.addGoal(5, new AmigoMeleeAttackGoal(this, 1.6, true));
         //this.goalSelector.addGoal(5, new AmigoRangedAttackGoal<>(this, 1.6));
-        this.goalSelector.addGoal(4, new AmigoEatGoal(this));
+        this.goalSelector.addGoal(4, new AmigoEatOrDrinkGoal(this));
         this.goalSelector.addGoal(6, new MoveBackToPostGoal(this, 1.0D, false));
         this.goalSelector.addGoal(6, new FollowPlayerGoal(this, 1.6D, 8.0F, 100.0F, false));
         this.goalSelector.addGoal(7, new AmigoFarmGoal(this, 1.0D));
