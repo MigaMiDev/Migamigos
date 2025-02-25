@@ -137,6 +137,8 @@ public class Claymore extends AmigoEntity {
         pushEntitiesAway(this);
         this.particleTick = 3;
 
+        this.invulnerableTime = 40;
+
         summonLightingBolt();
         if (this.hasPlayer() && this.getPlayer() != null) {
             this.getPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 150, 0));

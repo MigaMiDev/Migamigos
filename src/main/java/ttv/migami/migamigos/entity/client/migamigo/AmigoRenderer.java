@@ -109,6 +109,15 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
             @Nullable
             @Override
             protected ItemStack getStackForBone(GeoBone bone, AmigoEntity animatable) {
+                if ((bone.getName().equals(RIGHT_HAND) || bone.getName().equals(LEFT_HAND))) {
+                    if (animatable.getAmigo().getGeneral().hasCustomWeapon() && animatable.getMainHandItem().is(animatable.getDefaultItem())) {
+                        return null;
+                    }
+                    if (animatable.isEmoting() || animatable.isSitting()) {
+                        return null;
+                    }
+                }
+
                 boolean isMainHandBow = AmigoRenderer.this.mainHandItem.getItem() instanceof BowItem;
 
                 if (isMainHandBow) {
@@ -191,6 +200,9 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
 
         int eyeExpression = animatable.getEyeExpression();
 
+        if (bone.getName().equals("custom_item")) {
+            bone.setHidden(!animatable.getMainHandItem().is(animatable.getDefaultItem()) || (animatable.isEmoting() || animatable.isSitting()));
+        }
         if (bone.getName().startsWith("eyes_")) {
             switch (eyeExpression) {
                 case 0: bone.setHidden(!bone.getName().equals("eyes_open")); break;

@@ -19,7 +19,6 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.List;
@@ -73,8 +72,6 @@ public class AmigoEatOrDrinkGoal extends Goal {
     @Override
     public void tick() {
         --this.selfAidCooldown;
-
-        Migamigos.LOGGER.atInfo().log(this.eatingProgress);
 
         // Actual Using of the item
         --this.eatingProgress;

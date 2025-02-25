@@ -20,6 +20,7 @@ public class ModParticleTypes {
 
     public static final RegistryObject<SimpleParticleType> SOUL_LAVA_PARTICLE = REGISTER.register("soul_lava", () -> new SimpleParticleType(true));
 
+    public static final RegistryObject<SimpleParticleType> SPARK = REGISTER.register("spark", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> SMOKE = REGISTER.register("smoke", () -> new SimpleParticleType(true));
 
 }

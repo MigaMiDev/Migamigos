@@ -31,6 +31,10 @@ public class Amigo implements INBTSerializable<CompoundTag>
         private float health = 20.0F;
         private int healingTimer = 30;
         private float armor = 4.0F;
+        private boolean customWeapon = false;
+        private boolean doesAttack = true;
+        private boolean hasSpecial = true;
+        private boolean hasUltimate = true;
         private float recruitingChance = 0.25F;
         private int tolerance = 3;
         private float speed = 0.2F;
@@ -48,6 +52,10 @@ public class Amigo implements INBTSerializable<CompoundTag>
             tag.putFloat("Health", this.health);
             tag.putInt("HealingTimer", this.healingTimer);
             tag.putFloat("Armor", this.armor);
+            tag.putBoolean("CustomWeapon", this.customWeapon);
+            tag.putBoolean("Attacks", this.doesAttack);
+            tag.putBoolean("HasSpecial", this.hasSpecial);
+            tag.putBoolean("HasUltimate", this.hasUltimate);
             tag.putFloat("RecruitingChance", this.recruitingChance);
             tag.putInt("Tolerance", this.tolerance);
             tag.putFloat("Speed", this.speed);
@@ -82,6 +90,22 @@ public class Amigo implements INBTSerializable<CompoundTag>
             {
                 this.armor = tag.getFloat("Armor");
             }
+            if(tag.contains("CustomWeapon", Tag.TAG_ANY_NUMERIC))
+            {
+                this.customWeapon = tag.getBoolean("CustomWeapon");
+            }
+            if(tag.contains("Attacks", Tag.TAG_ANY_NUMERIC))
+            {
+                this.doesAttack = tag.getBoolean("Attacks");
+            }
+            if(tag.contains("HasSpecial", Tag.TAG_ANY_NUMERIC))
+            {
+                this.hasSpecial = tag.getBoolean("HasSpecial");
+            }
+            if(tag.contains("HasUltimate", Tag.TAG_ANY_NUMERIC))
+            {
+                this.hasUltimate = tag.getBoolean("HasUltimate");
+            }
             if(tag.contains("RecruitingChance", Tag.TAG_ANY_NUMERIC))
             {
                 this.recruitingChance = tag.getFloat("RecruitingChance");
@@ -108,6 +132,10 @@ public class Amigo implements INBTSerializable<CompoundTag>
             object.addProperty("health", this.health);
             object.addProperty("healingTimer", this.healingTimer);
             object.addProperty("armor", this.armor);
+            object.addProperty("customWeapon", this.customWeapon);
+            object.addProperty("doesAttack", this.doesAttack);
+            object.addProperty("hasSpecial", this.hasSpecial);
+            object.addProperty("hasUltimate", this.hasUltimate);
             object.addProperty("recruitingChance", this.recruitingChance);
             object.addProperty("tolerance", this.tolerance);
             object.addProperty("speed", this.speed);
@@ -126,6 +154,10 @@ public class Amigo implements INBTSerializable<CompoundTag>
             general.health = this.health;
             general.healingTimer = this.healingTimer;
             general.armor = this.armor;
+            general.customWeapon = this.customWeapon;
+            general.doesAttack = this.doesAttack;
+            general.hasSpecial = this.hasSpecial;
+            general.hasUltimate = this.hasUltimate;
             general.recruitingChance = this.recruitingChance;
             general.tolerance = this.tolerance;
             general.speed = this.speed;
@@ -156,6 +188,26 @@ public class Amigo implements INBTSerializable<CompoundTag>
         public float getArmor()
         {
             return this.armor;
+        }
+
+        public boolean hasCustomWeapon()
+        {
+            return this.customWeapon;
+        }
+
+        public boolean doesAttack()
+        {
+            return this.doesAttack;
+        }
+
+        public boolean hasSpecial()
+        {
+            return this.hasSpecial;
+        }
+
+        public boolean hasUltimate()
+        {
+            return this.hasUltimate;
         }
 
         public float getRecruitingChance()
@@ -434,6 +486,30 @@ public class Amigo implements INBTSerializable<CompoundTag>
         public Builder setArmor(float armor)
         {
             this.amigo.general.armor = armor;
+            return this;
+        }
+
+        public Builder setCustomWeapon(boolean customWeapon)
+        {
+            this.amigo.general.customWeapon = customWeapon;
+            return this;
+        }
+
+        public Builder setDoesAttack(boolean doesAttack)
+        {
+            this.amigo.general.doesAttack = doesAttack;
+            return this;
+        }
+
+        public Builder setHasSpecial(boolean hasSpecial)
+        {
+            this.amigo.general.hasSpecial = hasSpecial;
+            return this;
+        }
+
+        public Builder setHasUltimate(boolean hasUltimate)
+        {
+            this.amigo.general.hasUltimate = hasUltimate;
             return this;
         }
 

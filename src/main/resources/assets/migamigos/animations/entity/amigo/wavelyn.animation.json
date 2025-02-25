@@ -1697,7 +1697,7 @@
 		},
 		"eat": {
 			"loop": true,
-			"animation_length": 3.5833,
+			"animation_length": 3.7083,
 			"bones": {
 				"body": {
 					"rotation": {
@@ -2075,7 +2075,7 @@
 				}
 			}
 		},
-		"wave": {
+		"emote_wave": {
 			"loop": true,
 			"animation_length": 2.0417,
 			"bones": {
@@ -2248,9 +2248,10 @@
 							"vector": [-1.52251, -1.98315, -52.47365],
 							"easing": "easeOutBack"
 						},
-						"2.0": {
+						"1.8333": {
 							"vector": [-2.5, 0, 0],
-							"easing": "easeInOutBack"
+							"easing": "easeInOutBack",
+							"easingArgs": [1]
 						}
 					},
 					"position": {

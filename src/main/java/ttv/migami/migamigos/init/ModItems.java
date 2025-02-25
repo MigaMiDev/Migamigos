@@ -20,4 +20,6 @@ public class ModItems {
     public static final RegistryObject<Item> CLAYMORE_SPAWN_TORTILLA = REGISTER.register("claymore_spawn_tortilla",
             () -> new ForgeSpawnEggItem(ModEntities.CLAYMORE, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
+    public static final RegistryObject<Item> SHYSAW_SPAWN_TEDDY_BEAR = REGISTER.register("shysaw_spawn_teddy_bear",
+            () -> new ForgeSpawnEggItem(ModEntities.SHYSAW, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 }

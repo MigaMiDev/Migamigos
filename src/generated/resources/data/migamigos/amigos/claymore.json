@@ -17,7 +17,11 @@
   },
   "general": {
     "armor": 10.0,
+    "customWeapon": false,
+    "doesAttack": true,
     "favoriteItem": "minecraft:cooked_salmon",
+    "hasSpecial": true,
+    "hasUltimate": true,
     "healingTimer": 70,
     "health": 40.0,
     "name": "claymore",

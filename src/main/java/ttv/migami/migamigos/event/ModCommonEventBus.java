@@ -12,6 +12,7 @@ import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.amigo.Claymore;
 import ttv.migami.migamigos.entity.amigo.Cocogoat;
+import ttv.migami.migamigos.entity.amigo.Shysaw;
 import ttv.migami.migamigos.entity.amigo.Wavelyn;
 import ttv.migami.migamigos.entity.summon.HailShower;
 import ttv.migami.migamigos.entity.summon.IceLotus;
@@ -25,6 +26,7 @@ public class ModCommonEventBus {
         event.put(ModEntities.COCOGOAT.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.WAVELYN.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.CLAYMORE.get(), AmigoEntity.createAttributes().build());
+        event.put(ModEntities.SHYSAW.get(), AmigoEntity.createAttributes().build());
 
         event.put(ModEntities.ICE_LOTUS.get(), IceLotus.createAttributes().build());
         event.put(ModEntities.ICE_SHOWER.get(), HailShower.createAttributes().build());
@@ -60,6 +62,13 @@ public class ModCommonEventBus {
                 SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
                 Claymore::checkAmigoSpawnRules,
+                SpawnPlacementRegisterEvent.Operation.OR
+        );
+        event.register(
+                ModEntities.SHYSAW.get(),
+                SpawnPlacements.Type.ON_GROUND,
+                Heightmap.Types.WORLD_SURFACE,
+                Shysaw::checkAmigoSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.OR
         );
     }

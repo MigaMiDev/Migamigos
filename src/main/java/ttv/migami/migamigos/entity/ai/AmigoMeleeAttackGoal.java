@@ -93,10 +93,10 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
             }
 
             // Ultimate Attack
-            if (this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isSpecialAttacking() && !this.amigo.isComboAttacking()) {
+            if (this.amigo.getAmigo().getGeneral().hasUltimate() && this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isSpecialAttacking() && !this.amigo.isComboAttacking()) {
                 List<Entity> nearbyEntities = this.amigo.level().getEntities(this.amigo, this.amigo.getBoundingBox().inflate(6));
                 long enemyCount = nearbyEntities.stream().filter(e -> e instanceof Enemy).count();
-                if (enemyCount >= 5) {
+                if (enemyCount >= 5 || this.amigo.getTarget().getMaxHealth() >= this.amigo.getMaxHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3) {
                     this.amigo.setPlayingAnimation(true);
                     this.amigo.setAttacking(true);
                     this.amigo.setUltimateAttacking(true);
@@ -109,7 +109,7 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
             }
 
             // Special Attack
-            if (this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isUltimateAttacking() && !this.amigo.isComboAttacking()) {
+            if (this.amigo.getAmigo().getGeneral().hasSpecial() && this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isUltimateAttacking() && !this.amigo.isComboAttacking()) {
                 if (distanceToTarget <= 3 * 3) {
                     this.amigo.setPlayingAnimation(true);
                     this.amigo.setAttacking(true);
@@ -123,7 +123,8 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
             }
 
             // Normal/Combo Attack
-            if (distanceToTarget > 4 * 4) {
+            if (distanceToTarget > 5 * 5 && !this.amigo.isSpecialAttacking() &&
+                    !this.amigo.isUltimateAttacking()) {
                 this.amigo.setAttacking(false);
                 this.amigo.setSpecialAttacking(false);
                 this.amigo.setUltimateAttacking(false);
@@ -132,7 +133,7 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
             } else if (!this.amigo.isSpecialAttacking() &&
                     !this.amigo.isUltimateAttacking() &&
                     this.amigo.getComboCooldown() <= 0 &&
-                    distanceToTarget <= 3 * 3) {
+                    distanceToTarget <= 4 * 4) {
                 this.amigo.setPlayingAnimation(true);
                 this.amigo.setComboAttacking(true);
                 this.amigo.setAttacking(true);

@@ -18,7 +18,11 @@
   },
   "general": {
     "armor": 2.0,
+    "customWeapon": false,
+    "doesAttack": true,
     "favoriteItem": "minecraft:cookie",
+    "hasSpecial": true,
+    "hasUltimate": true,
     "healingTimer": 40,
     "health": 25.0,
     "name": "wavelyn",

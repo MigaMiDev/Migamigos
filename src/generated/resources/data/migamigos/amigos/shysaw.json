@@ -1,0 +1,33 @@
+{
+  "attackCombo": {
+    "cooldown": 95,
+    "name": "saw_blade_combo",
+    "power": 4.0,
+    "recoil": 0.5
+  },
+  "attackSpecial": {
+    "name": "saw_slam",
+    "power": 5.0
+  },
+  "attackUltimate": {
+    "cooldown": 1000,
+    "name": "saw_spin",
+    "power": 3.0,
+    "recoil": 0.5
+  },
+  "general": {
+    "armor": 4.0,
+    "customWeapon": true,
+    "doesAttack": true,
+    "favoriteItem": "minecraft:cooked_chicken",
+    "hasSpecial": false,
+    "hasUltimate": true,
+    "healingTimer": 30,
+    "health": 30.0,
+    "name": "shysaw",
+    "recruitingChance": 0.25,
+    "renderSize": 0.9,
+    "speed": 0.225,
+    "tolerance": 6
+  }
+}

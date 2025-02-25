@@ -93,10 +93,10 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
             }
 
             // Ultimate Attack
-            if (this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isSpecialAttacking() && !this.amigo.isComboAttacking()) {
+            if (this.amigo.getAmigo().getGeneral().hasUltimate() && this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isSpecialAttacking() && !this.amigo.isComboAttacking()) {
                 List<Entity> nearbyEntities = this.amigo.level().getEntities(this.amigo, this.amigo.getBoundingBox().inflate(6));
                 long enemyCount = nearbyEntities.stream().filter(e -> e instanceof Enemy).count();
-                if (enemyCount >= 5) {
+                if (enemyCount >= 5 || this.amigo.getTarget().getMaxHealth() >= this.amigo.getMaxHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3) {
                     this.amigo.setPlayingAnimation(true);
                     this.amigo.setAttacking(true);
                     this.amigo.setUltimateAttacking(true);
@@ -109,7 +109,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
             }
 
             // Special Attack
-            if (this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isUltimateAttacking() && !this.amigo.isComboAttacking()) {
+            if (this.amigo.getAmigo().getGeneral().hasSpecial() && this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isUltimateAttacking() && !this.amigo.isComboAttacking()) {
                 if (distanceToTarget <= 3 * 3) {
                     this.amigo.setPlayingAnimation(true);
                     this.amigo.setAttacking(true);
@@ -123,7 +123,8 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
             }
 
             // Normal/Combo Attack
-            if (distanceToTarget > 17 * 17) {
+            if (distanceToTarget > 16 * 16 && !this.amigo.isSpecialAttacking() &&
+                    !this.amigo.isUltimateAttacking()) {
                 this.amigo.setAttacking(false);
                 this.amigo.setSpecialAttacking(false);
                 this.amigo.setUltimateAttacking(false);

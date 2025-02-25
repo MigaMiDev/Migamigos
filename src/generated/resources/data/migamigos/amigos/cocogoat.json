@@ -18,7 +18,11 @@
   },
   "general": {
     "armor": 3.0,
+    "customWeapon": false,
+    "doesAttack": true,
     "favoriteItem": "minecraft:azure_bluet",
+    "hasSpecial": true,
+    "hasUltimate": true,
     "healingTimer": 60,
     "health": 30.0,
     "name": "cocogoat",

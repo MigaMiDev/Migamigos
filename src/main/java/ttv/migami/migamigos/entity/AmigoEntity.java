@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -47,9 +46,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import ttv.migami.migamigos.AmigoAnimations;
-import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.common.Amigo;
-import ttv.migami.migamigos.common.BasicAmigoManager;
 import ttv.migami.migamigos.common.amigo.Action;
 import ttv.migami.migamigos.common.container.AmigoContainer;
 import ttv.migami.migamigos.entity.ai.*;
@@ -72,6 +69,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     private long comboStartTime;
     protected int emoteTimer = 0;
     protected Item defaultItem = Items.IRON_SWORD;
+    protected Item lastItem = Items.AIR;
 
     protected final static int EMOTE_COOLDOWN = 100;
     protected int emoteCooldown = EMOTE_COOLDOWN;
@@ -176,17 +174,6 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
         //this.loadAmigo();
         this.refreshData();
-    }
-
-    public void loadAmigo() {
-        EntityType<?> entitytype = this.getType();
-        ResourceLocation id = EntityType.getKey(entitytype);
-
-        ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID, id.getPath());
-        if (this.level() instanceof ServerLevel serverLevel) {
-            BasicAmigoManager.loadAmigoDataFromDatapack(resourceLocation, serverLevel.getServer().getResourceManager(), this);
-        }
-        //NetworkAmigoManager.loadAmigoDataFromDatapack(resourceLocation, Minecraft.getInstance().getResourceManager(), this);
     }
 
     public void refreshData() {
@@ -379,6 +366,9 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
         this.setIsSitting(this.isPassenger());
 
+        /*if (this.isEmoting()) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, Items.AIR.getDefaultInstance());
+        }*/
         if (this.emoteTimer > 0) {
             this.emoteTimer--;
         }
