@@ -32,6 +32,7 @@ public class Claymore extends AmigoEntity {
         super(pEntityType, pLevel);
         this.setDefaultItem(Items.IRON_SWORD);
         this.chime = ModSounds.CLAYMORE_CHIME.get();
+        this.setAmigoName("claymore");
     }
 
     @Override
@@ -236,7 +237,7 @@ public class Claymore extends AmigoEntity {
 
         for (Entity entity : nearbyEntities) {
             if (entity instanceof LivingEntity livingEntity && livingEntity != this.getPlayer()) {
-                if (entity instanceof Enemy || entity.equals(this.getTarget())) {
+                if (entity instanceof Enemy || entity.equals(this.getTarget()) || (livingEntity instanceof AmigoEntity amigo && (amigo.isEnemigo() || amigo.isHeartless()))) {
                     livingEntity.hurtMarked = true;
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 4));
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 4));

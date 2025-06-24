@@ -247,7 +247,7 @@ public class NetworkAmigoManager extends SimplePreparableReloadListener<Map<Amig
     }
 
     /**
-     * A simple wrapper for a amigo object to pass to AmigoEntityType<?>. This is to indicate to developers that
+     * A simple wrapper for an amigo object to pass to AmigoEntityType<?>. This is to indicate to developers that
      * Amigo instances shouldn't be changed on AmigoEntityType<?>s as they are controlled by NetworkAmigoManager.
      * Changes to amigo properties should be made through the JSON file.
      */

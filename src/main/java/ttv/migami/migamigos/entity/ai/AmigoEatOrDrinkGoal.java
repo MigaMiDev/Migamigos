@@ -54,6 +54,10 @@ public class AmigoEatOrDrinkGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (this.amigoEntity.isHeartless()) {
+            return false;
+        }
+
         return !this.amigoEntity.isDeadOrDying();
     }
 

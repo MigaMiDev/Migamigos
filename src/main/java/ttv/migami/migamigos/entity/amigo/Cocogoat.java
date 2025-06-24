@@ -27,6 +27,7 @@ public class Cocogoat extends AmigoEntity {
         super(pEntityType, pLevel);
         this.setDefaultItem(Items.BOW);
         this.chime = ModSounds.COCOGOAT_CHIME.get();
+        this.setAmigoName("cocogoat");
     }
 
     @Override

@@ -14,17 +14,20 @@ public class AmigoModel extends GeoModel<AmigoEntity> {
 
     @Override
     public ResourceLocation getModelResource(AmigoEntity animatable) {
-        return new ResourceLocation(Reference.MOD_ID, "geo/entity/amigo/" + animatable.getAmigo().getGeneral().getName() + ".geo.json");
+        //return new ResourceLocation(Reference.MOD_ID, "geo/entity/amigo/" + animatable.getAmigo().getGeneral().getName() + ".geo.json");
+        return new ResourceLocation(Reference.MOD_ID, "geo/entity/amigo/" + animatable.getAmigoName() + ".geo.json");
     }
 
     @Override
     public ResourceLocation getTextureResource(AmigoEntity animatable) {
-        return new ResourceLocation(Reference.MOD_ID, "textures/animated/amigo/" + animatable.getAmigo().getGeneral().getName() + ".png");
+        //return new ResourceLocation(Reference.MOD_ID, "textures/animated/amigo/" + animatable.getAmigo().getGeneral().getName() + ".png");
+        return new ResourceLocation(Reference.MOD_ID, "textures/animated/amigo/" + animatable.getAmigoName() + ".png");
     }
 
     @Override
     public ResourceLocation getAnimationResource(AmigoEntity animatable) {
-        return new ResourceLocation(Reference.MOD_ID, "animations/entity/amigo/" + animatable.getAmigo().getGeneral().getName() + ".animation.json");
+        //return new ResourceLocation(Reference.MOD_ID, "animations/entity/amigo/" + animatable.getAmigo().getGeneral().getName() + ".animation.json");
+        return new ResourceLocation(Reference.MOD_ID, "animations/entity/amigo/" + animatable.getAmigoName() + ".animation.json");
     }
 
     @Override

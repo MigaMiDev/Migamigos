@@ -5,6 +5,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import ttv.migami.migamigos.entity.AmigoEntity;
@@ -45,18 +52,39 @@ public class NearestAttackableAmigoTargetGoal<T extends LivingEntity> extends Ta
         if (!(this.mob instanceof AmigoEntity amigoEntity)) {
             return false;
         }
-        if (amigoEntity.getHealth() < amigoEntity.getMaxHealth() / 3) {
+        if (amigoEntity.getHealth() < amigoEntity.getMaxHealth() / 3 && !amigoEntity.isHeartless() && !amigoEntity.isEnemigo()) {
             return false;
         }
-        if (!amigoEntity.isAttackingAnyEnemy()) {
+        if (!amigoEntity.isAttackingAnyEnemy() && !amigoEntity.isHeartless() && !amigoEntity.isEnemigo()) {
             return false;
         }
         if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
             return false;
-        } else {
-            this.findTarget();
-            return this.target != null;
         }
+
+        Predicate<LivingEntity> pTargetPredicate;
+        if (amigoEntity.isEnemigo() || amigoEntity.isHeartless()) {
+            pTargetPredicate = (livingEntity) -> !(livingEntity instanceof Enemy) && (
+                    livingEntity instanceof Animal ||
+                            livingEntity instanceof Villager ||
+                            (livingEntity instanceof Player && !livingEntity.isSpectator() && !((Player) livingEntity).isCreative()) ||
+                            livingEntity instanceof IronGolem ||
+                            (livingEntity instanceof AmigoEntity amigoEntity1 && (!amigoEntity1.isHeartless() && !amigoEntity1.isEnemigo()))
+            );
+        } else {
+            pTargetPredicate = (livingEntity) ->
+                    (livingEntity instanceof Enemy || (livingEntity instanceof AmigoEntity amigoEntity1 && (amigoEntity1.isHeartless() || amigoEntity1.isEnemigo()))) &&
+                            !(livingEntity instanceof Creeper) &&
+                            !(livingEntity instanceof EnderMan) &&
+                            !(livingEntity instanceof Ravager);
+        }
+
+        this.targetConditions = TargetingConditions.forCombat()
+                .range(this.getFollowDistance())
+                .selector(pTargetPredicate);
+
+        this.findTarget();
+        return this.target != null;
     }
 
     protected AABB getTargetSearchArea(double pTargetDistance) {

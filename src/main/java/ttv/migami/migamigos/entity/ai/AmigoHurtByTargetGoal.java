@@ -37,7 +37,15 @@ public class AmigoHurtByTargetGoal extends TargetGoal {
 
         if (livingentity instanceof AmigoEntity attackingAmigoEntity &&
                 attackingAmigoEntity.getPlayer() == amigoEntity.getPlayer()) {
-            return false;
+            if (attackingAmigoEntity.hasPlayer() && amigoEntity.hasPlayer()) {
+                return false;
+            }
+        }
+
+        if (livingentity instanceof TamableAnimal tamable) {
+            if (tamable.isTame() && tamable.getOwner() != null) {
+                return tamable.getOwner().getUUID() != amigoEntity.getPlayer().getUUID();
+            }
         }
 
         if (i != this.timestamp && livingentity != null) {
@@ -81,12 +89,27 @@ public class AmigoHurtByTargetGoal extends TargetGoal {
     }
 
     protected void alertOthers() {
+        if (this.mob instanceof AmigoEntity amigoEntity && (amigoEntity.isHeartless() || amigoEntity.isEnemigo())) {
+            return;
+        }
+
         double d0 = this.getFollowDistance();
         AABB aabb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(d0, 10.0, d0);
         List<AmigoEntity> nearbyEntities = this.mob.level().getEntitiesOfClass(
                 AmigoEntity.class,
                 aabb,
-                amigoEntity -> (!amigoEntity.isDefendingPlayerOnly() || !amigoEntity.hasPlayer()) && amigoEntity.getTarget() == null
+                amigoEntity -> {
+                    if (!(this.mob instanceof AmigoEntity amigo)) return false;
+                    if (amigoEntity.getTarget() != null) return false;
+
+                    boolean isHeartlessOrEnemigo = (amigoEntity.isHeartless() || amigoEntity.isEnemigo()) && (amigo.isEnemigo() || amigo.isHeartless());
+
+                    if (isHeartlessOrEnemigo) {
+                        return true;
+                    } else {
+                        return !amigoEntity.isDefendingPlayerOnly() || !amigoEntity.hasPlayer();
+                    }
+                }
         );
         Iterator iterator = nearbyEntities.iterator();
 

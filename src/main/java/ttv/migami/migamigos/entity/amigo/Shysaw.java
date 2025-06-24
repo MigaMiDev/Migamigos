@@ -28,7 +28,8 @@ public class Shysaw extends AmigoEntity {
     public Shysaw(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setDefaultItem(Items.NETHERITE_AXE);
-        this.chime = ModSounds.CLAYMORE_CHIME.get();
+        this.chime = ModSounds.WAVELYN_CHIME.get();
+        this.setAmigoName("shysaw");
     }
 
     @Override

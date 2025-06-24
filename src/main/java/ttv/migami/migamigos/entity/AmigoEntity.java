@@ -20,6 +20,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -62,7 +64,7 @@ import java.util.function.Consumer;
 
 public class AmigoEntity extends PathfinderMob implements GeoEntity {
     //private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
-    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private Amigo amigo = new Amigo();
     protected SoundEvent chime = null;
     private Action currentAction;
@@ -73,6 +75,11 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     protected final static int EMOTE_COOLDOWN = 100;
     protected int emoteCooldown = EMOTE_COOLDOWN;
+
+    private static final EntityDataAccessor<String> DATA_NAME = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.STRING);
+
+    private static final EntityDataAccessor<Boolean> DATA_IS_ENEMIGO = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_IS_HEARTLESS = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final EntityDataAccessor<Boolean> DATA_SHOW_HELMET = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_SHOW_CHESTPLATE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
@@ -166,13 +173,11 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
 
         this.setLeftHanded(false);
-        this.setItemSlot(EquipmentSlot.MAINHAND, this.getDefaultItem().getDefaultInstance());
 
         if (pEntityType instanceof AmigoEntityType<?> amigoEntityType) {
             this.amigo = amigoEntityType.getAmigo();
         }
 
-        //this.loadAmigo();
         this.refreshData();
     }
 
@@ -222,11 +227,12 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.goalSelector.addGoal(8, new WaterAvoidingAmigoStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+
         this.targetSelector.addGoal(1, new PlayerHurtByTargetGoal(this));
         this.targetSelector.addGoal(1, new AmigoHurtByPlayerGoal(this));
         this.targetSelector.addGoal(2, new PlayerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, (new AmigoHurtByTargetGoal(this)).setAlertOthers());
-        this.targetSelector.addGoal(7, new NearestAttackableAmigoTargetGoal<>(this, Mob.class, 5, true, true, (livingEntity) -> livingEntity instanceof Enemy && !(livingEntity instanceof Creeper) && !(livingEntity instanceof EnderMan) && !(livingEntity instanceof Ravager)));
+        this.targetSelector.addGoal(7, new NearestAttackableAmigoTargetGoal<>(this, LivingEntity.class, 5, true, true, (livingEntity) -> livingEntity instanceof Enemy && !(livingEntity instanceof Creeper) && !(livingEntity instanceof EnderMan) && !(livingEntity instanceof Ravager)));
     }
 
     public void playChime() {
@@ -237,6 +243,8 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (this.isHeartless() || this.isEnemigo()) return InteractionResult.SUCCESS;
+
         ItemStack itemstack = player.getItemInHand(hand);
         Random random = new Random();
 
@@ -364,7 +372,23 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     public void tick() {
         super.tick();
 
+        if (this.isLeftHanded()) {
+            this.setLeftHanded(false);
+        }
+        if (this.getMainHandItem() != this.defaultItem.getDefaultInstance() && this.tickCount < 20) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, this.getDefaultItem().getDefaultInstance());
+        }
+
         this.setIsSitting(this.isPassenger());
+
+        if (this.isHeartless()) {
+            this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false));
+            this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false));
+        }
+        if (this.isEnemigo()) {
+            this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 1, false, false));
+            this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 1, false, false));
+        }
 
         /*if (this.isEmoting()) {
             this.setItemSlot(EquipmentSlot.MAINHAND, Items.AIR.getDefaultInstance());
@@ -392,12 +416,14 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
             this.setEyeExpression(0);
         }
 
-        if (this.getTarget()!= null && this.getTarget().isDeadOrDying()) {
+        if (this.getTarget() != null && this.getTarget().isDeadOrDying()) {
             this.setTarget(null);
         }
 
         if (this.getTarget() instanceof AmigoEntity amigoEntityTarget && amigoEntityTarget.getPlayer() == this.getPlayer()) {
-            this.setTarget(null);
+            if (this.hasPlayer() && amigoEntityTarget.hasPlayer()) {
+                this.setTarget(null);
+            }
         }
 
         if (this.currentAction != null) {
@@ -417,23 +443,25 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         }
 
         // Heal if outside of combat and not full health
-        if (this.getHealth() < this.getMaxHealth() && !this.isAttacking() && !this.isDeadOrDying()) {
-            this.healingTimer--;
-            if (this.healingTimer <= 0) {
-                if (this.level() instanceof ServerLevel serverLevel) {
-                    for (int i = 0; i < 1; i++) {
-                        serverLevel.sendParticles(ParticleTypes.HEART,
-                                this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth(),
-                                this.getY() + random.nextDouble() * this.getBbHeight(),
-                                this.getZ() + (random.nextDouble() - 0.5) * this.getBbWidth(),
-                                1, 0, 0, 0, 0.1);
+        if (!this.isHeartless()) {
+            if (this.getHealth() < this.getMaxHealth() && !this.isAttacking() && !this.isDeadOrDying()) {
+                this.healingTimer--;
+                if (this.healingTimer <= 0) {
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        for (int i = 0; i < 1; i++) {
+                            serverLevel.sendParticles(ParticleTypes.HEART,
+                                    this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth(),
+                                    this.getY() + random.nextDouble() * this.getBbHeight(),
+                                    this.getZ() + (random.nextDouble() - 0.5) * this.getBbWidth(),
+                                    1, 0, 0, 0, 0.1);
+                        }
                     }
+                    this.setHealth(this.getHealth() + 2);
+                    this.healingTimer = maxHealingTimer;
                 }
-                this.setHealth(this.getHealth() + 2);
+            } else {
                 this.healingTimer = maxHealingTimer;
             }
-        } else {
-            this.healingTimer = maxHealingTimer;
         }
 
         // Update Player every tick
@@ -492,9 +520,17 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     public void stopAttacks() {
         this.setAttacking(false);
+        this.setComboAttacking(false);
         this.setSpecialAttacking(false);
         this.setUltimateAttacking(false);
         this.setPlayingAnimation(false);
+    }
+
+    public void startAttacking(Action action) {
+        this.startAction(action);
+        this.setAttacking(true);
+        this.setPlayingAnimation(true);
+        this.getNavigation().stop();
     }
 
     public void startAction(Action combo) {
@@ -561,6 +597,38 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         double growthFactor = 1.1;
         return (int) (base * Math.pow(growthFactor, currentLevel));
         //return base + (currentLevel) + 1;
+    }
+
+    public String getAmigoName() {
+        return this.entityData.get(DATA_NAME);
+    }
+
+    public void setAmigoName(String name) {
+        this.entityData.set(DATA_NAME, name);
+    }
+
+    public boolean isEnemigo() {
+        return this.entityData.get(DATA_IS_ENEMIGO);
+    }
+
+    public void setEnemigo(boolean enemigo) {
+        if (enemigo) {
+            this.clearPlayer();
+            this.setAttackingAnyEnemy(true);
+        }
+        this.entityData.set(DATA_IS_ENEMIGO, enemigo);
+    }
+
+    public boolean isHeartless() {
+        return this.entityData.get(DATA_IS_HEARTLESS);
+    }
+
+    public void setHeartless(boolean heartless) {
+        if (heartless) {
+            this.clearPlayer();
+            this.setAttackingAnyEnemy(true);
+        }
+        this.entityData.set(DATA_IS_HEARTLESS, heartless);
     }
 
     public boolean isShowingHelmet() {
@@ -846,6 +914,11 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
 
+        this.entityData.define(DATA_NAME, "Amigo");
+
+        this.entityData.define(DATA_IS_ENEMIGO, false);
+        this.entityData.define(DATA_IS_HEARTLESS, false);
+
         this.entityData.define(DATA_SHOW_HELMET, true);
         this.entityData.define(DATA_SHOW_CHESTPLATE, true);
         this.entityData.define(DATA_SHOW_LEGGINGS, true);
@@ -885,6 +958,9 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+
+        compound.putBoolean("IsEnemigo", this.isEnemigo());
+        compound.putBoolean("IsHeartless", this.isHeartless());
 
         // Experience & Level
         compound.putInt("AmigoExperience", this.getExperience());
@@ -934,6 +1010,13 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+
+        if (compound.contains("IsEnemigo")) {
+            this.setEnemigo(compound.getBoolean("IsEnemigo"));
+        }
+        if (compound.contains("IsHeartless")) {
+            this.setHeartless(compound.getBoolean("IsHeartless"));
+        }
 
         // Experience & Level
         if (compound.contains("AmigoExperience")) {

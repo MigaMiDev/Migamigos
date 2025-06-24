@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +37,11 @@ public class ServerPlayHandler
         if (!(target instanceof Enemy) && !target.equals(amigo.getTarget())) {
             return;
         }
+
+        if (amigo.hasEffect(MobEffects.DAMAGE_BOOST)) {
+            damage *= amigo.getEffect(MobEffects.DAMAGE_BOOST).getAmplifier() + 1;
+        }
+
         target.hurt(damageSource, damage);
         target.invulnerableTime = 0;
         if (target.level() instanceof ServerLevel serverLevel) {

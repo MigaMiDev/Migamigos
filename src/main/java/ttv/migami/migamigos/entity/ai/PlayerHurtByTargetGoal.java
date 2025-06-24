@@ -1,6 +1,7 @@
 package ttv.migami.migamigos.entity.ai;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import ttv.migami.migamigos.entity.AmigoEntity;
@@ -25,6 +26,11 @@ public class PlayerHurtByTargetGoal extends TargetGoal {
                 return false;
             } else {
                 this.playerLastHurtBy = livingentity.getLastHurtByMob();
+                if (this.playerLastHurtBy instanceof TamableAnimal tamable) {
+                    if (tamable.isTame() && tamable.getOwner() != null) {
+                        return tamable.getOwner().getUUID() != livingentity.getUUID();
+                    }
+                }
                 if (this.playerLastHurtBy != null && this.playerLastHurtBy.isDeadOrDying()) {
                     return false;
                 }

@@ -8,10 +8,13 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
+import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.core.object.Color;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 import software.bernie.geckolib.renderer.layer.ItemArmorGeoLayer;
@@ -21,6 +24,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
+    private int currentTick = -1;
+
     private static final String LEFT_HAND = "left_hand";
     private static final String RIGHT_HAND = "right_hand";
 
@@ -37,9 +42,22 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
     protected ItemStack mainHandItem;
     protected ItemStack offhandItem;
 
+    @Override
+    public Color getRenderColor(AmigoEntity animatable, float partialTick, int packedLight) {
+        if (animatable.isHeartless()) {
+            return Color.BLACK;
+        }
+        else if (animatable.isEnemigo()) {
+            return Color.DARK_GRAY;
+        }
+        return Color.WHITE;
+    }
+
     public AmigoRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new AmigoModel());
         this.shadowRadius = 0.5f;
+
+        addRenderLayer(new EnemigoEyeLayer(this));
 
         // Armor Renderer
         addRenderLayer(new ItemArmorGeoLayer<>(this) {
@@ -200,6 +218,9 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
 
         int eyeExpression = animatable.getEyeExpression();
 
+        if (bone.getName().startsWith("glow")) {
+            packedLight = 15728880;
+        }
         if (bone.getName().equals("custom_item")) {
             bone.setHidden(!animatable.getMainHandItem().is(animatable.getDefaultItem()) || (animatable.isEmoting() || animatable.isSitting()));
         }
@@ -221,6 +242,11 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                        MultiBufferSource bufferSource, int packedLight) {
         float size = entity.getAmigo().getGeneral().getRenderSize();
         poseStack.scale(size, size, size);
+
+        if (entity.isHeartless()) {
+            packedLight = 15728880;
+        }
+
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
@@ -234,6 +260,10 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
 
     @Override
     public boolean shouldShowName(AmigoEntity amigoEntity) {
+        if (amigoEntity.isEnemigo() || amigoEntity.isHeartless()) {
+            return false;
+        }
+
         double d0 = this.entityRenderDispatcher.distanceToSqr(amigoEntity);
         float f = amigoEntity.isDiscrete() ? 8.0F : 16.0F;
         if (d0 >= (double)(f * f)) {
@@ -245,5 +275,50 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
         }
 
         return !amigoEntity.isContainerOpen();
+    }
+
+    @Override
+    public void renderFinal(PoseStack poseStack, AmigoEntity animatable, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        if (this.currentTick < 0 || this.currentTick != animatable.tickCount) {
+            this.currentTick = animatable.tickCount;
+
+            if (animatable.isEnemigo() || animatable.isHeartless()) {
+                this.model.getBone("head").ifPresent(smoke -> {
+                    Vector3d pos = smoke.getWorldPosition();
+
+                    if (this.currentTick % 5 == 0) {
+                        smokeParticles(pos);
+                    }
+                });
+
+                this.model.getBone("right_hand").ifPresent(smoke -> {
+                    Vector3d pos = smoke.getWorldPosition();
+
+                    if (this.currentTick % 5 == 0) {
+                        smokeParticles(pos);
+                    }
+                });
+
+                this.model.getBone("left_hand").ifPresent(smoke -> {
+                    Vector3d pos = smoke.getWorldPosition();
+
+                    if (this.currentTick % 5 == 0) {
+                        smokeParticles(pos);
+                    }
+                });
+            }
+        }
+
+        super.renderFinal(poseStack, animatable, model, bufferSource, buffer, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    private void smokeParticles(Vector3d pos) {
+        animatable.getCommandSenderWorld().addParticle(ParticleTypes.SMOKE,
+                pos.x(),
+                pos.y(),
+                pos.z(),
+                0,
+                0,
+                0);
     }
 }

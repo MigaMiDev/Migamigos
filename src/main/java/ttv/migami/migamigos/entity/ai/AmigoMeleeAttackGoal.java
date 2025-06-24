@@ -7,6 +7,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.EnumSet;
@@ -29,6 +32,9 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
 
     @Override
     public boolean canUse() {
+        if (this.amigo.getTarget() == null) {
+            return false;
+        }
         if (this.amigo.hasPlayer() && this.amigo.getPlayer() != null && this.amigo.distanceToSqr(this.amigo.getPlayer()) >= 720.0) {
             return false;
         }
@@ -38,7 +44,10 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
         if (this.amigo.isEating() || this.amigo.isEmoting()) {
             return false;
         }
-        return this.amigo.getTarget() != null && !this.amigo.getTarget().isDeadOrDying();
+        if (this.amigo.getTarget().isDeadOrDying()) {
+            return false;
+        }
+        return this.amigo.getTarget() != null;
     }
 
     @Override
@@ -63,9 +72,9 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
         this.seeTime = 0;
         this.amigo.stopUsingItem();
         this.amigo.setAttacking(false);
+        this.amigo.setComboAttacking(false);
         this.amigo.setSpecialAttacking(false);
         this.amigo.setUltimateAttacking(false);
-        this.amigo.setComboAttacking(false);
         this.amigo.setComboCooldown(20);
     }
 
@@ -92,57 +101,57 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
                 --this.seeTime;
             }
 
-            // Ultimate Attack
-            if (this.amigo.getAmigo().getGeneral().hasUltimate() && this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isSpecialAttacking() && !this.amigo.isComboAttacking()) {
-                List<Entity> nearbyEntities = this.amigo.level().getEntities(this.amigo, this.amigo.getBoundingBox().inflate(6));
-                long enemyCount = nearbyEntities.stream().filter(e -> e instanceof Enemy).count();
-                if (enemyCount >= 5 || this.amigo.getTarget().getMaxHealth() >= this.amigo.getMaxHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3) {
-                    this.amigo.setPlayingAnimation(true);
-                    this.amigo.setAttacking(true);
+            AABB attackRange = this.amigo.getBoundingBox().inflate(2.0);
+            AABB specialRange = this.amigo.getBoundingBox().inflate(1.0);
+
+            List<Entity> nearbyEntities = this.amigo.level().getEntities(this.amigo, this.amigo.getBoundingBox().inflate(6));
+            long enemyCount = nearbyEntities.stream().filter(e ->
+                    e instanceof Enemy ||
+                            (e instanceof AmigoEntity amigoEntity1 && (amigoEntity1.isHeartless() || amigoEntity1.isEnemigo()))
+                    ).count();
+            if (this.amigo.isHeartless() || this.amigo.isEnemigo()) {
+                nearbyEntities.stream().filter(e ->
+                        e instanceof Player ||
+                                (e instanceof AmigoEntity amigoEntity1 && (!amigoEntity1.isHeartless() && !amigoEntity1.isEnemigo()))
+                ).count();
+            }
+
+            boolean ultimateConditions = (enemyCount >= 5 || this.amigo.getTarget().getHealth() >= this.amigo.getHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3);
+
+            if (ultimateConditions && !this.amigo.isHeartless() &&
+                    this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isComboAttacking() &&
+                    !this.amigo.isSpecialAttacking()) {
+                {
                     this.amigo.setUltimateAttacking(true);
-                    this.amigo.setSpecialAttacking(false);
-                    this.amigo.setComboAttacking(false);
-                    this.amigo.setUltimateCooldown(ultimateCooldown);
-                    this.amigo.startAction(this.amigo.ultimateAction());
-                    this.amigo.getNavigation().stop();
+                    this.amigo.setUltimateCooldown(this.ultimateCooldown);
+                    this.amigo.startAttacking(this.amigo.ultimateAction());
                 }
             }
-
-            // Special Attack
-            if (this.amigo.getAmigo().getGeneral().hasSpecial() && this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isUltimateAttacking() && !this.amigo.isComboAttacking()) {
-                if (distanceToTarget <= 3 * 3) {
-                    this.amigo.setPlayingAnimation(true);
-                    this.amigo.setAttacking(true);
-                    this.amigo.setSpecialAttacking(true);
-                    this.amigo.setUltimateAttacking(false);
-                    this.amigo.setComboAttacking(false);
-                    this.amigo.setSpecialCooldown(this.specialCooldown);
-                    this.amigo.startAction(this.amigo.specialAction());
-                    this.amigo.getNavigation().stop();
-                }
-            }
-
-            // Normal/Combo Attack
-            if (distanceToTarget > 5 * 5 && !this.amigo.isSpecialAttacking() &&
+            else if (specialRange.intersects(this.amigo.getTarget().getBoundingBox()) && !this.amigo.isHeartless() &&
+                    this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isComboAttacking() &&
                     !this.amigo.isUltimateAttacking()) {
-                this.amigo.setAttacking(false);
-                this.amigo.setSpecialAttacking(false);
-                this.amigo.setUltimateAttacking(false);
-                this.amigo.setComboAttacking(false);
-                this.amigo.getNavigation().moveTo(target, this.speedModifier);
-            } else if (!this.amigo.isSpecialAttacking() &&
-                    !this.amigo.isUltimateAttacking() &&
-                    this.amigo.getComboCooldown() <= 0 &&
-                    distanceToTarget <= 4 * 4) {
-                this.amigo.setPlayingAnimation(true);
-                this.amigo.setComboAttacking(true);
-                this.amigo.setAttacking(true);
-                this.amigo.getNavigation().stop();
-                this.amigo.setComboCooldown(this.comboCooldown);
-                this.amigo.startAction(this.amigo.basicAction());
-            } else if (!this.amigo.isAttacking()) {
+                {
+                    this.amigo.setSpecialAttacking(true);
+                    this.amigo.setSpecialCooldown(this.specialCooldown);
+                    this.amigo.startAttacking(this.amigo.specialAction());
+                }
+            }
+            else if (attackRange.intersects(this.amigo.getTarget().getBoundingBox()) &&
+                    this.amigo.getComboCooldown() <= 0 && !this.amigo.isSpecialAttacking() &&
+                    !this.amigo.isUltimateAttacking()) {
+                {
+                    this.amigo.setComboAttacking(true);
+                    this.amigo.setComboCooldown(this.comboCooldown);
+                    this.amigo.startAttacking(this.amigo.basicAction());
+                }
+            }
+            else if ((!attackRange.intersects(this.amigo.getTarget().getBoundingBox()) && !specialRange.intersects(this.amigo.getTarget().getBoundingBox())) || (!this.amigo.isComboAttacking() && !this.amigo.isSpecialAttacking() && !this.amigo.isUltimateAttacking())) {
+                this.amigo.stopAttacks();
                 this.amigo.getNavigation().moveTo(target, this.speedModifier);
             }
+
+            Migamigos.LOGGER.atInfo().log(this.amigo.getComboCooldown() + " combo " + this.amigo.isComboAttacking() + " | special " + this.amigo.isSpecialAttacking() + " | ultimate " + this.amigo.isUltimateAttacking());
+            Migamigos.LOGGER.atInfo().log("attackRange " + attackRange.intersects(target.getBoundingBox()) + " | specialRange " + specialRange.intersects(target.getBoundingBox()));
 
             double targetEyeY = target.getEyeY();
             this.amigo.getLookControl().setLookAt(target.getX(), targetEyeY, target.getZ());

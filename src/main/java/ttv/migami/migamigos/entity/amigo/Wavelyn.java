@@ -29,6 +29,7 @@ public class Wavelyn extends AmigoEntity {
         super(pEntityType, pLevel);
         this.setDefaultItem(Items.ENCHANTED_BOOK);
         this.chime = ModSounds.WAVELYN_CHIME.get();
+        this.setAmigoName("wavelyn");
     }
 
     @Override
@@ -161,7 +162,7 @@ public class Wavelyn extends AmigoEntity {
         for (LivingEntity entity : allEntities) {
             if (entity.equals(this.getTarget())) {
                 summonLightingBolt(entity);
-            } else if (!(entity instanceof Player) && entity instanceof Enemy) {
+            } else if (((!this.isEnemigo() && !this.isHeartless() && !(entity instanceof Player)) && entity instanceof Enemy) || (this.isHeartless() || this.isEnemigo())) {
                 //if (this.level().random.nextInt(1) == 0) {
                 if (this.level().random.nextBoolean()) {
                     summonLightingBolt(entity);
