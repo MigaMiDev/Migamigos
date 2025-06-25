@@ -7,17 +7,17 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import ttv.migami.migamigos.common.amigo.Action;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.ai.AmigoRangedAttackGoal;
 import ttv.migami.migamigos.entity.fx.ScorchMarkEntity;
 import ttv.migami.migamigos.entity.projectile.wavelyn.SoulFireball;
+import ttv.migami.migamigos.init.ModCommands;
 import ttv.migami.migamigos.init.ModSounds;
 import ttv.migami.migamigos.init.ModTags;
 
@@ -103,6 +103,7 @@ public class Wavelyn extends AmigoEntity {
         pushEntitiesAway(this);
         this.particleTick = 3;
 
+        // Heal Player
         if (this.hasPlayer() && this.getPlayer() != null) {
             this.getPlayer().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
 
@@ -110,15 +111,24 @@ public class Wavelyn extends AmigoEntity {
                 serverLevel.sendParticles(ParticleTypes.HEART, this.getPlayer().getX(), this.getPlayer().getY(), this.getPlayer().getZ(), 8, this.getPlayer().getBbWidth() / 2, this.getPlayer().getBbHeight() / 2, this.getPlayer().getBbWidth() / 2, 0.1);
             }
         }
+
+        // Heal self
         this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
 
-        List<Entity> nearbyAmigos = this.level().getEntities(this, this.getBoundingBox().inflate(10), e -> e != this && e instanceof AmigoEntity);
-        for (Entity entity : nearbyAmigos) {
-            if (entity instanceof AmigoEntity amigoEntity) {
-                amigoEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
+        // Heal Amigos/Allies
+        List<Entity> nearbyAllies = this.level().getEntities(this, this.getBoundingBox().inflate(10), e -> e != this && e instanceof LivingEntity);
+        for (Entity entity : nearbyAllies) {
+            if (entity instanceof LivingEntity livingEntity) {
+                if (!ServerPlayHandler.shouldHurt(this, livingEntity)) {
+                    if (livingEntity.getMobType().equals(MobType.UNDEAD)) {
+                        livingEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 1));
+                    } else {
+                        livingEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 1));
+                    }
 
-                if (this.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(ParticleTypes.HEART, entity.getX(), entity.getY(), entity.getZ(), 8, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2, 0.1);
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleTypes.HEART, entity.getX(), entity.getY(), entity.getZ(), 8, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2, 0.1);
+                    }
                 }
             }
         }
@@ -133,7 +143,7 @@ public class Wavelyn extends AmigoEntity {
             Vec3 direction = entity.position().subtract(this.position()).normalize();
 
             if (entity instanceof LivingEntity livingEntity && livingEntity != this.getPlayer()) {
-                if (entity instanceof Enemy || entity.equals(this.getTarget())) {
+                if (ServerPlayHandler.shouldHurt(this, livingEntity) || entity.equals(this.getTarget())) {
                     livingEntity.hurtMarked = true;
                     livingEntity.push(direction.x * 2, direction.y * 3 + 1, direction.z * 2);
                 }
@@ -159,17 +169,18 @@ public class Wavelyn extends AmigoEntity {
         AABB lightingArea = this.getBoundingBox().inflate(10D);
         List<LivingEntity> allEntities = this.level().getEntitiesOfClass(LivingEntity.class, lightingArea);
 
+        // Smite enemies
         for (LivingEntity entity : allEntities) {
             if (entity.equals(this.getTarget())) {
                 summonLightingBolt(entity);
-            } else if (((!this.isEnemigo() && !this.isHeartless() && !(entity instanceof Player)) && entity instanceof Enemy) || (this.isHeartless() || this.isEnemigo())) {
-                //if (this.level().random.nextInt(1) == 0) {
+            } else if (ServerPlayHandler.shouldHurt(this, entity)) {
                 if (this.level().random.nextBoolean()) {
                     summonLightingBolt(entity);
                 }
             }
         }
 
+        // Heal Player
         if (this.hasPlayer() && this.getPlayer() != null) {
             this.getPlayer().heal(this.getPlayer().getMaxHealth());
             this.getPlayer().addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 1));
@@ -178,17 +189,22 @@ public class Wavelyn extends AmigoEntity {
                 serverLevel.sendParticles(ParticleTypes.HEART, this.getPlayer().getX(), this.getPlayer().getY(), this.getPlayer().getZ(), 8, this.getPlayer().getBbWidth() / 2, this.getPlayer().getBbHeight() / 2, this.getPlayer().getBbWidth() / 2, 0.1);
             }
         }
+
+        // Heal self
         this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
         this.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 1));
 
+        // Heal Amigos/Allies
         List<Entity> nearbyAmigos = this.level().getEntities(this, this.getBoundingBox().inflate(5), e -> e != this && e instanceof AmigoEntity);
         for (Entity entity : nearbyAmigos) {
             if (entity instanceof AmigoEntity amigoEntity) {
-                amigoEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
-                amigoEntity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 1));
+                if (!ServerPlayHandler.shouldHurt(this, amigoEntity)) {
+                    amigoEntity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
+                    amigoEntity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 1));
 
-                if (this.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(ParticleTypes.HEART, entity.getX(), entity.getY(), entity.getZ(), 8, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2, 0.1);
+                    if (this.level() instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleTypes.HEART, entity.getX(), entity.getY(), entity.getZ(), 8, entity.getBbWidth() / 2, entity.getBbHeight() / 2, entity.getBbWidth() / 2, 0.1);
+                    }
                 }
             }
         }
@@ -201,14 +217,12 @@ public class Wavelyn extends AmigoEntity {
     }
 
     public void summonLightingBolt(LivingEntity livingEntity) {
-        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, this.level());
-        lightningBolt.setPos(livingEntity.getPosition(1F));
-        lightningBolt.setVisualOnly(true);
+        ModCommands.summonLightingBolt(livingEntity.level(), livingEntity.getPosition(1F));
+
         if (livingEntity.getType().is(ModTags.Entities.UNDEAD)) {
             livingEntity.setSecondsOnFire((int) ((int) this.getAmigo().getAttackUltimate().getPower() + this.getExtraPower() / 2));
         }
         livingEntity.hurt(this.damageSources().magic(), this.getAmigo().getAttackUltimate().getPower() + this.getExtraPower());
-        this.level().addFreshEntity(lightningBolt);
 
         if (this.level() instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), ((int) this.getAmigo().getAttackCombo().getPower() / 2), livingEntity.getBbWidth() / 2, livingEntity.getBbHeight() / 2, livingEntity.getBbWidth() / 2, 0.1);

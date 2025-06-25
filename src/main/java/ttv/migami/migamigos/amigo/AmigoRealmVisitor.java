@@ -107,6 +107,7 @@ public class AmigoRealmVisitor implements CustomSpawner {
             Component message = Component.translatable("broadcast.migamigos.amigo_visitor").withStyle(ChatFormatting.WHITE);
             level.getServer().getPlayerList().broadcastSystemMessage(message, false);
         }
+
         return 1;
     }
 }

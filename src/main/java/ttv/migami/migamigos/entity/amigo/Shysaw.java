@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import ttv.migami.migamigos.common.amigo.Action;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.ai.AmigoMeleeAttackGoal;
 import ttv.migami.migamigos.init.ModParticleTypes;
@@ -99,7 +100,7 @@ public class Shysaw extends AmigoEntity {
 
             if (isInBoundingBox || isInCone) {
                 if (this.level() instanceof ServerLevel serverLevel) {
-                    if (entity.equals(this.getTarget()) || entity instanceof Enemy) {
+                    if (entity.equals(this.getTarget()) || ServerPlayHandler.shouldHurt(this, entity)) {
                         for (int i = 0; i < 1; i++) {
                             serverLevel.sendParticles(ModParticleTypes.SPARK.get(),
                                     entity.getX() + (random.nextDouble() - 0.5) * entity.getBbWidth(),
@@ -143,9 +144,9 @@ public class Shysaw extends AmigoEntity {
     public void specialAttack() {
         if (this.isDeadOrDying()) return;
 
-        List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(4), e -> e != this && e instanceof Enemy);
+        List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(4), e -> e != this && e instanceof LivingEntity);
         for (Entity entity : nearbyFoes) {
-            if (entity instanceof Mob enemyEntity) {
+            if (entity instanceof Mob enemyEntity && ServerPlayHandler.shouldHurt(this, enemyEntity)) {
                 if (entity.equals(this.getTarget())) {
                     tryToHurt(this, enemyEntity, this.damageSources().mobAttack(this), this.getAmigo().getAttackSpecial().getPower() + this.getExtraPower());
                 } else {
@@ -182,7 +183,7 @@ public class Shysaw extends AmigoEntity {
 
         List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(3), e -> e != this && e instanceof Enemy);
         for (Entity entity : nearbyFoes) {
-            if (entity instanceof Mob enemyEntity) {
+            if (entity instanceof Mob enemyEntity && ServerPlayHandler.shouldHurt(this, enemyEntity)) {
                 if (entity.equals(this.getTarget())) {
                     tryToHurt(this, enemyEntity, this.damageSources().mobAttack(this), this.getAmigo().getAttackSpecial().getPower() + this.getExtraPower());
                 } else {

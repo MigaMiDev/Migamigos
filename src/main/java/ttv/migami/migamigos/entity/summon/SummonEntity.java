@@ -12,10 +12,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.Optional;
@@ -53,19 +52,16 @@ public class SummonEntity extends Mob implements IEntityAdditionalSpawnData {
         {
             return;
         }
-        if (entity instanceof AmigoEntity target &&
-                target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
-            return;
-        }
         if (entity.getUUID() == this.playerUUID) {
             return;
         }
-        if (!(entity instanceof Enemy) && this.owner instanceof AmigoEntity amigoEntity && !entity.equals(amigoEntity.getTarget())) {
-            return;
+
+        if (this.owner instanceof AmigoEntity amigoEntity) {
+            if (!ServerPlayHandler.shouldHurt(amigoEntity, entity)) {
+                return;
+            }
         }
-        if (entity instanceof Villager) {
-            return;
-        }
+
         entity.hurt(damageSource, damage);
         entity.invulnerableTime = 0;
     }

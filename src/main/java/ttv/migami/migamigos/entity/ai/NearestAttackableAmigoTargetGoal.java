@@ -5,8 +5,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Enemy;
@@ -65,10 +65,10 @@ public class NearestAttackableAmigoTargetGoal<T extends LivingEntity> extends Ta
         Predicate<LivingEntity> pTargetPredicate;
         if (amigoEntity.isEnemigo() || amigoEntity.isHeartless()) {
             pTargetPredicate = (livingEntity) -> !(livingEntity instanceof Enemy) && (
-                    livingEntity instanceof Animal ||
+                    //livingEntity instanceof Animal ||
                             livingEntity instanceof Villager ||
                             (livingEntity instanceof Player && !livingEntity.isSpectator() && !((Player) livingEntity).isCreative()) ||
-                            livingEntity instanceof IronGolem ||
+                            livingEntity instanceof IronGolem || livingEntity instanceof SnowGolem ||
                             (livingEntity instanceof AmigoEntity amigoEntity1 && (!amigoEntity1.isHeartless() && !amigoEntity1.isEnemigo()))
             );
         } else {

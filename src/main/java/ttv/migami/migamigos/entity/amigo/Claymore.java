@@ -8,7 +8,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -16,10 +19,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import ttv.migami.migamigos.common.amigo.Action;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.StunEntity;
 import ttv.migami.migamigos.entity.ai.AmigoMeleeAttackGoal;
-import ttv.migami.migamigos.entity.fx.GroundCracksEntity;
+import ttv.migami.migamigos.init.ModCommands;
 import ttv.migami.migamigos.init.ModSounds;
 
 import java.util.List;
@@ -140,7 +144,7 @@ public class Claymore extends AmigoEntity {
 
         this.invulnerableTime = 40;
 
-        summonLightingBolt();
+        ModCommands.summonLightingBolt(this.level(), this.getPosition(1F));
         if (this.hasPlayer() && this.getPlayer() != null) {
             this.getPlayer().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 150, 0));
 
@@ -163,7 +167,7 @@ public class Claymore extends AmigoEntity {
 
         List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(10), e -> e != this && e instanceof Enemy);
         for (Entity entity : nearbyFoes) {
-            if (entity instanceof Mob enemyEntity) {
+            if (entity instanceof Mob enemyEntity && ServerPlayHandler.shouldHurt(this, enemyEntity)) {
                 enemyEntity.setTarget(this);
                 enemyEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0));
 
@@ -174,13 +178,6 @@ public class Claymore extends AmigoEntity {
         }
     }
 
-    public void summonLightingBolt() {
-        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT, this.level());
-        lightningBolt.setPos(this.getPosition(1F).add(0, 2, 0));
-        lightningBolt.setVisualOnly(true);
-        this.level().addFreshEntity(lightningBolt);
-    }
-
     public void pushEntitiesAway(Claymore claymore) {
         List<Entity> nearbyEntities = claymore.level().getEntities(claymore, claymore.getBoundingBox().inflate(5), e -> e != claymore && e instanceof LivingEntity);
 
@@ -188,7 +185,7 @@ public class Claymore extends AmigoEntity {
             Vec3 direction = entity.position().subtract(this.position()).normalize();
 
             if (entity instanceof LivingEntity livingEntity && livingEntity != this.getPlayer()) {
-                if (entity instanceof Enemy || entity.equals(this.getTarget())) {
+                if (ServerPlayHandler.shouldHurt(this, livingEntity)|| entity.equals(this.getTarget())) {
                     livingEntity.hurtMarked = true;
                     livingEntity.push(direction.x * 1, direction.y * 1 + 0.1, direction.z * 1);
                 }
@@ -213,9 +210,9 @@ public class Claymore extends AmigoEntity {
         this.particleTick = 3;
         this.invulnerableTime = 140;
 
-        List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(5), e -> e != this && e instanceof Enemy);
+        List<Entity> nearbyFoes = this.level().getEntities(this, this.getBoundingBox().inflate(5), e -> e != this && e instanceof LivingEntity);
         for (Entity entity : nearbyFoes) {
-            if (entity instanceof Mob enemyEntity) {
+            if (entity instanceof Mob enemyEntity && ServerPlayHandler.shouldHurt(this, enemyEntity)) {
                 enemyEntity.setTarget(this);
                 enemyEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0));
 
@@ -225,9 +222,7 @@ public class Claymore extends AmigoEntity {
             }
         }
 
-        GroundCracksEntity groundCracks = new GroundCracksEntity(this.level(), this.getOnPos(), 200, 6);
-        groundCracks.setPos(this.getPosition(1F));
-        this.level().addFreshEntity(groundCracks);
+        ModCommands.summonGroundCracks(this.level(), this.getOnPos().getCenter());
 
         this.level().playSound(null, this, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
@@ -237,7 +232,7 @@ public class Claymore extends AmigoEntity {
 
         for (Entity entity : nearbyEntities) {
             if (entity instanceof LivingEntity livingEntity && livingEntity != this.getPlayer()) {
-                if (entity instanceof Enemy || entity.equals(this.getTarget()) || (livingEntity instanceof AmigoEntity amigo && (amigo.isEnemigo() || amigo.isHeartless()))) {
+                if (ServerPlayHandler.shouldHurt(this, livingEntity) || entity.equals(this.getTarget())) {
                     livingEntity.hurtMarked = true;
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 120, 4));
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 4));

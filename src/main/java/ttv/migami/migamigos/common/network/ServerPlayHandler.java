@@ -8,7 +8,13 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.init.ModSounds;
@@ -19,22 +25,60 @@ import static ttv.migami.migamigos.common.AmigoDataHandler.getAmigoByUUID;
 
 public class ServerPlayHandler
 {
-    public static void tryToHurt(AmigoEntity amigo, LivingEntity target, DamageSource damageSource, float damage) {
-        if (target instanceof AmigoEntity amigoTarget) {
-            if (amigo.hasPlayer() && amigo.getPlayer() != null && amigo.getPlayer().equals(amigoTarget.getPlayer())) {
-                return;
+    public static boolean shouldHurt (AmigoEntity attacker, LivingEntity target) {
+        if (target instanceof AmigoEntity amigoTarget && amigoTarget.hasPlayer() && attacker.hasPlayer()) {
+            if (amigoTarget.getPlayer() == attacker.getPlayer()) {
+                return false;
             }
         }
-        if (target.equals(amigo.getPlayer())) {
-            return;
+
+        if (attacker.hasPlayer() && target == attacker.getPlayer()) return false;
+
+        boolean isEnemigo = attacker.isEnemigo() || attacker.isHeartless();
+
+        // If the Attacker amigo is NOT an Enemigo, attack hostile creatures and Enemigos
+        if (!isEnemigo) {
+            if (target instanceof AmigoEntity amigoTarget && (amigoTarget.isEnemigo() || amigoTarget.isHeartless())) return true;
+
+            if (target instanceof AmigoEntity amigoTarget && (!amigoTarget.isEnemigo() && !amigoTarget.isHeartless())) return false;
+
+            if (target.getType().getCategory().equals(MobCategory.MONSTER)) return true;
+
+            if (target instanceof Enemy) return true;
+
+            if (target instanceof Player player && attacker.getTarget() != player) return false;
+
+            if (target instanceof TamableAnimal tamableAnimal && tamableAnimal.isTame()) {
+                if (tamableAnimal.getOwnerUUID() != null && attacker.getPlayer() != null && tamableAnimal.getOwnerUUID().equals(attacker.getPlayer().getUUID()))
+                    return false;
+            }
+
+            return (target instanceof Enemy);
         }
-        if (target instanceof Player && amigo.getTarget() != null && !amigo.getTarget().equals(target)) {
-            return;
+        // If the Attacker amigo IS an Enemigo, attack Players, Animals, Villagers, Iron Golems and Players
+        else {
+            if (target instanceof AmigoEntity amigoTarget && (!amigoTarget.isEnemigo() && !amigoTarget.isHeartless())) return true;
+
+            if (attacker.getTarget() != target && target instanceof AmigoEntity amigoTarget && (amigoTarget.isEnemigo() || amigoTarget.isHeartless())) return false;
+
+            if (target instanceof Villager) return true;
+
+            if (target instanceof IronGolem) return true;
+
+            if (target instanceof SnowGolem) return true;
+
+            if (target instanceof Animal) return true;
+
+            if (target instanceof Player) return true;
+
+            if (target instanceof Enemy && target == attacker.getTarget()) return true;
+
+            return !(target instanceof Enemy);
         }
-        if (target instanceof AmigoEntity && amigo.getTarget() != null && !amigo.getTarget().equals(target)) {
-            return;
-        }
-        if (!(target instanceof Enemy) && !target.equals(amigo.getTarget())) {
+    }
+
+    public static void tryToHurt(AmigoEntity amigo, LivingEntity target, DamageSource damageSource, float damage) {
+        if (!shouldHurt(amigo, target)) {
             return;
         }
 

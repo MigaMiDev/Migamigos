@@ -5,10 +5,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 
 import java.util.EnumSet;
@@ -105,9 +105,8 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
 
             List<Entity> nearbyEntities = this.amigo.level().getEntities(this.amigo, this.amigo.getBoundingBox().inflate(6));
             long enemyCount = nearbyEntities.stream().filter(e ->
-                    e instanceof Enemy ||
-                            (e instanceof AmigoEntity amigoEntity1 && (amigoEntity1.isHeartless() || amigoEntity1.isEnemigo()))
-            ).count();
+                    e instanceof LivingEntity livingEntity && ServerPlayHandler.shouldHurt(this.amigo, livingEntity)
+                    ).count();
             if (this.amigo.isHeartless() || this.amigo.isEnemigo()) {
                 nearbyEntities.stream().filter(e ->
                         e instanceof Player ||
@@ -117,7 +116,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
 
             boolean ultimateConditions = (enemyCount >= 5 || this.amigo.getTarget().getHealth() >= this.amigo.getHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3);
 
-            if (ultimateConditions && !this.amigo.isHeartless() &&
+            if (this.amigo.getAmigo().getGeneral().hasUltimate() && ultimateConditions && !this.amigo.isHeartless() &&
                     this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isComboAttacking() &&
                     !this.amigo.isSpecialAttacking()) {
                 {
@@ -126,7 +125,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
                     this.amigo.startAttacking(this.amigo.ultimateAction());
                 }
             }
-            else if (specialRange.intersects(this.amigo.getTarget().getBoundingBox()) && !this.amigo.isHeartless() &&
+            else if (this.amigo.getAmigo().getGeneral().hasSpecial() && specialRange.intersects(this.amigo.getTarget().getBoundingBox()) && !this.amigo.isHeartless() &&
                     this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isComboAttacking() &&
                     !this.amigo.isUltimateAttacking()) {
                 {

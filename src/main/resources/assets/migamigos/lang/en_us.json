@@ -27,6 +27,7 @@
   "gui.migamigos.amigo_inventory.following.false": "Is Staying",
   "cutesy.migamigos.thanks": "Thank you for using Migamigos!",
   "chat.migamigos.favorite_item": "They like %1$s!",
+  "chat.migamigos.foe_appeared": "A new foe has appeared!",
   "broadcast.migamigos.amigo_visitor": "An Amigo is visiting your Realm!",
   "warning.migamigos.wip": "This is a very early release of Migamigos!",
   "warning.migamigos.wip_2": "Report any bug you find and stay tuned for future updates!",

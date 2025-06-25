@@ -38,6 +38,7 @@ import ttv.migami.migamigos.entity.client.projectile.cocogoat.IceConeRenderer;
 import ttv.migami.migamigos.entity.client.projectile.wavelyn.SoulFireballRenderer;
 import ttv.migami.migamigos.entity.client.summon.IceLotusRenderer;
 import ttv.migami.migamigos.entity.client.summon.IceShowerRenderer;
+import ttv.migami.migamigos.event.ModCommandsRegister;
 import ttv.migami.migamigos.event.ModCommonEventBus;
 import ttv.migami.migamigos.event.ServerTickHandler;
 import ttv.migami.migamigos.init.*;
@@ -79,6 +80,7 @@ public class Migamigos {
             bus.addListener(KeyBinds::registerKeyMappings);
         });
         MinecraftForge.EVENT_BUS.register(ServerTickHandler.class);
+        MinecraftForge.EVENT_BUS.register(new ModCommandsRegister());
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

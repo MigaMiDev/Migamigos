@@ -44,6 +44,10 @@ public class AmigoFarmGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        if (this.amigoEntity.isHeartless() || this.amigoEntity.isEnemigo()) {
+            return false;
+        }
+
         //return findNextCrop() && !this.amigo.isFollowing();
         if (this.targetCropPos != null) {
             return true;

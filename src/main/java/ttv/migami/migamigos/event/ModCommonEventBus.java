@@ -20,7 +20,6 @@ import ttv.migami.migamigos.init.ModEntities;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModCommonEventBus {
-
     @SubscribeEvent
     public static void entityAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.COCOGOAT.get(), AmigoEntity.createAttributes().build());

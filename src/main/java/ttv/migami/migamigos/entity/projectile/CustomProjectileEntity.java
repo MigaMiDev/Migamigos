@@ -23,6 +23,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.jetbrains.annotations.Nullable;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.summon.SummonEntity;
 import ttv.migami.migamigos.event.AmigoProjectileHitEvent;
@@ -146,12 +147,13 @@ public class CustomProjectileEntity extends Entity implements IEntityAdditionalS
                             target.getPlayer() != null && target.getPlayer().getUUID() == this.playerUUID) {
                         doHit = false;
                     }
-                    if (!(entity instanceof Enemy) && this.owner instanceof AmigoEntity amigoEntity && !entity.equals(amigoEntity.getTarget())) {
-                        doHit = false;
-                    }
 
-                    if (entity instanceof Villager) {
-                        return;
+                    if (this.owner instanceof AmigoEntity amigoEntity && entity instanceof LivingEntity livingEntity) {
+                        if (ServerPlayHandler.shouldHurt(amigoEntity, livingEntity)) {
+                            doHit = true;
+                        } else {
+                            doHit = false;
+                        }
                     }
 
                     if (doHit) {

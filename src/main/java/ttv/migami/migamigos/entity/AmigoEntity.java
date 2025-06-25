@@ -15,10 +15,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -223,7 +220,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.goalSelector.addGoal(4, new AmigoEatOrDrinkGoal(this));
         this.goalSelector.addGoal(6, new MoveBackToPostGoal(this, 1.0D, false));
         this.goalSelector.addGoal(6, new FollowPlayerGoal(this, 1.6D, 8.0F, 100.0F, false));
-        this.goalSelector.addGoal(7, new AmigoFarmGoal(this, 1.0D));
+        //this.goalSelector.addGoal(7, new AmigoFarmGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new WaterAvoidingAmigoStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
@@ -294,7 +291,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
                 // Heal
                 if (this.getTolerance() < this.maxTolerance || this.getHealth() < this.getMaxHealth()) {
-                    if (this.level() instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel && !this.isEnemigo() && !this.isHeartless()) {
                         for (int i = 0; i < 3; i++) {
                             serverLevel.sendParticles(ParticleTypes.HEART,
                                     this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth(),
@@ -310,7 +307,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
                 }
 
                 // Recruit
-                if (!this.hasPlayer()) {
+                if (!this.hasPlayer() && !this.isEnemigo() && !this.isHeartless()) {
 
                     //if (player.getPersistentData().getInt(USED_AMIGO_SLOTS_KEY) < 5) {
                         itemstack.shrink(1);
@@ -368,6 +365,19 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         });
     }
 
+    public void heartlessParticles(ServerLevel serverLevel) {
+        serverLevel.sendParticles(ParticleTypes.SQUID_INK,
+                this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth(),
+                this.getY() + random.nextDouble() * this.getBbHeight(),
+                this.getZ() + (random.nextDouble() - 0.5) * this.getBbWidth(),
+                20, this.getBbWidth() / 2, this.getBbHeight() / 2, this.getBbWidth() / 2, 0.1);
+    }
+
+    public void heartlessDiscard(ServerLevel serverLevel) {
+        this.heartlessParticles(serverLevel);
+        this.discard();
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -381,7 +391,24 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
         this.setIsSitting(this.isPassenger());
 
+        if (this.isEnemigo()) {
+            if (this.level().getDifficulty().equals(Difficulty.PEACEFUL)) {
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    this.heartlessDiscard(serverLevel);
+                }
+            }
+        }
         if (this.isHeartless()) {
+            if (this.level().getDifficulty().equals(Difficulty.PEACEFUL)) {
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    this.heartlessDiscard(serverLevel);
+                }
+            }
+            if (isDeadOrDying()) {
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    this.heartlessDiscard(serverLevel);
+                }
+            }
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false));
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false));
         }
@@ -447,7 +474,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
             if (this.getHealth() < this.getMaxHealth() && !this.isAttacking() && !this.isDeadOrDying()) {
                 this.healingTimer--;
                 if (this.healingTimer <= 0) {
-                    if (this.level() instanceof ServerLevel serverLevel) {
+                    if (this.level() instanceof ServerLevel serverLevel && !this.isEnemigo()) {
                         for (int i = 0; i < 1; i++) {
                             serverLevel.sendParticles(ParticleTypes.HEART,
                                     this.getX() + (random.nextDouble() - 0.5) * this.getBbWidth(),
