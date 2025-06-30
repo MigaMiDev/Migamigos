@@ -109,7 +109,7 @@ public class AmigoGen extends AmigoProvider
                 .setHealth(20.0F)
                 .setHealingTimer(20)
                 .setArmor(3.0F)
-                .setCustomWeapon(false)
+                .setCustomWeapon(true)
                 .setHasSpecial(false)
                 .setRecruitingChance(0.25F)
                 .setTolerance(6)
