@@ -1013,6 +1013,20 @@
 					]
 				},
 				{
+					"name": "cross",
+					"parent": "body",
+					"pivot": [2.65, 16.8637, -2.31644],
+					"cubes": [
+						{
+							"origin": [1.9, 15.5637, -2.31644],
+							"size": [1.5, 2, 0],
+							"uv": {
+								"north": {"uv": [64, 14], "uv_size": [3, 4]}
+							}
+						}
+					]
+				},
+				{
 					"name": "right_arm",
 					"parent": "body",
 					"pivot": [-4, 22, 0],

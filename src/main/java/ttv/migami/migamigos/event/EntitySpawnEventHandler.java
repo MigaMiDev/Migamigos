@@ -5,7 +5,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
@@ -14,10 +17,14 @@ import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import tallestegg.guardvillagers.GuardEntityType;
+import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.Reference;
+import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.entity.amigo.Shysaw;
 import ttv.migami.migamigos.init.ModCommands;
 import ttv.migami.migamigos.init.ModEntities;
@@ -27,6 +34,64 @@ import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EntitySpawnEventHandler {
+
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (!(event.getEntity() instanceof Mob mob)) return;
+
+        if (event.getEntity().getType() == EntityType.IRON_GOLEM || event.getEntity().getType() == EntityType.SNOW_GOLEM) {
+            mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(
+                    mob,
+                    AmigoEntity.class,
+                    10,
+                    true,
+                    false,
+                    entity -> entity instanceof AmigoEntity amigo && (amigo.isHeartless() || amigo.isEnemigo())
+            ));
+        }
+
+        if (Migamigos.guardsLoaded && event.getEntity().getType() == GuardEntityType.GUARD.get()) {
+            mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(
+                    mob,
+                    AmigoEntity.class,
+                    10,
+                    true,
+                    false,
+                    entity -> entity instanceof AmigoEntity amigo && (amigo.isHeartless() || amigo.isEnemigo())
+            ));
+        }
+
+        /*if (Migamigos.recruitsLoaded &&
+                (event.getEntity().getType() == ModEntityTypes.RECRUIT.get() ||
+                        event.getEntity().getType() == ModEntityTypes.RECRUIT.get() ||
+                        event.getEntity().getType() == ModEntityTypes.RECRUIT_SHIELDMAN.get() ||
+                        event.getEntity().getType() == ModEntityTypes.BOWMAN.get() ||
+                        event.getEntity().getType() == ModEntityTypes.CAPTAIN.get() ||
+                        event.getEntity().getType() == ModEntityTypes.CROSSBOWMAN.get() ||
+                        event.getEntity().getType() == ModEntityTypes.NOMAD.get() ||
+                        event.getEntity().getType() == ModEntityTypes.PATROL_LEADER.get() ||
+                        event.getEntity().getType() == ModEntityTypes.SCOUT.get())) {
+            mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(
+                    mob,
+                    AmigoEntity.class,
+                    10,
+                    true,
+                    false,
+                    entity -> entity instanceof AmigoEntity amigo && (amigo.isHeartless() || amigo.isEnemigo())
+            ));
+        }*/
+
+        /*if (event.getEntity().getType().builtInRegistryHolder().is(ModTags.GOLEMS)) {
+            mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(
+                    mob,
+                    AmigoEntity.class,
+                    10,
+                    true,
+                    false,
+                    entity -> ((AmigoEntity) entity).isHeartless()
+            ));
+        }*/
+    }
 
     @SubscribeEvent
     public static void onSpecialSpawn(MobSpawnEvent.FinalizeSpawn event) {

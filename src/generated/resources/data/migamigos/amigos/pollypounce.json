@@ -1,9 +1,8 @@
 {
   "attackCombo": {
     "cooldown": 95,
-    "name": "saw_blade_combo",
-    "power": 4.0,
-    "recoil": 0.5
+    "name": "parrot_flurry",
+    "power": 2.0
   },
   "attackSpecial": {
     "name": "saw_slam",
@@ -16,15 +15,15 @@
     "recoil": 0.5
   },
   "general": {
-    "armor": 4.0,
-    "customWeapon": true,
+    "armor": 3.0,
+    "customWeapon": false,
     "doesAttack": true,
-    "favoriteItem": "minecraft:cooked_chicken",
+    "favoriteItem": "minecraft:cod",
     "hasSpecial": false,
     "hasUltimate": true,
-    "healingTimer": 30,
-    "health": 30.0,
-    "name": "shysaw",
+    "healingTimer": 20,
+    "health": 20.0,
+    "name": "pollypounce",
     "recruitingChance": 0.25,
     "renderSize": 0.85,
     "speed": 0.225,

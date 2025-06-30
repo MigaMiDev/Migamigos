@@ -1,6 +1,7 @@
 package ttv.migami.migamigos.entity.ai;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -31,6 +32,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
 
     @Override
     public boolean canUse() {
+        if (this.amigo.hasEffect(MobEffects.WEAKNESS)) return false;
         if (this.amigo.getTarget() == null) {
             return false;
         }

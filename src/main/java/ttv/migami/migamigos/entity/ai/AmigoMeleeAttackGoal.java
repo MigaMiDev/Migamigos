@@ -1,6 +1,7 @@
 package ttv.migami.migamigos.entity.ai;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -8,7 +9,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
 
@@ -32,6 +32,7 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
 
     @Override
     public boolean canUse() {
+        if (this.amigo.hasEffect(MobEffects.WEAKNESS)) return false;
         if (this.amigo.getTarget() == null) {
             return false;
         }
@@ -148,9 +149,6 @@ public class AmigoMeleeAttackGoal<T extends Mob & RangedAttackMob> extends Goal 
                 this.amigo.stopAttacks();
                 this.amigo.getNavigation().moveTo(target, this.speedModifier);
             }
-
-            Migamigos.LOGGER.atInfo().log(this.amigo.getComboCooldown() + " combo " + this.amigo.isComboAttacking() + " | special " + this.amigo.isSpecialAttacking() + " | ultimate " + this.amigo.isUltimateAttacking());
-            Migamigos.LOGGER.atInfo().log("attackRange " + attackRange.intersects(target.getBoundingBox()) + " | specialRange " + specialRange.intersects(target.getBoundingBox()));
 
             double targetEyeY = target.getEyeY();
             this.amigo.getLookControl().setLookAt(target.getX(), targetEyeY, target.getZ());

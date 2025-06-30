@@ -21,6 +21,9 @@ public class AmigoModel extends GeoModel<AmigoEntity> {
     @Override
     public ResourceLocation getTextureResource(AmigoEntity animatable) {
         //return new ResourceLocation(Reference.MOD_ID, "textures/animated/amigo/" + animatable.getAmigo().getGeneral().getName() + ".png");
+        if (animatable.isHeartless()) {
+            return new ResourceLocation(Reference.MOD_ID, "textures/animated/heartless/" + animatable.getAmigoName() + ".png");
+        }
         return new ResourceLocation(Reference.MOD_ID, "textures/animated/amigo/" + animatable.getAmigoName() + ".png");
     }
 

@@ -11,9 +11,11 @@ import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer;
 import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.amigo.Pollypounce;
 
 public class EnemigoEyeLayer extends GeoRenderLayer<AmigoEntity> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/animated/enemigo/eyes_mask.png");
+    private static final ResourceLocation TEXTURE_POLLY = new ResourceLocation(Reference.MOD_ID, "textures/animated/enemigo/eyes_mask_pollypounce.png");
 
     public EnemigoEyeLayer(GeoRenderer<AmigoEntity> entityRenderer) {
         super(entityRenderer);
@@ -22,7 +24,12 @@ public class EnemigoEyeLayer extends GeoRenderLayer<AmigoEntity> {
     @Override
     public void render(PoseStack poseStack, AmigoEntity animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
         if (animatable.isEnemigo()) {
-            RenderType armorRenderType = RenderType.energySwirl(TEXTURE, 1, 1);
+            RenderType armorRenderType;
+            if (animatable instanceof Pollypounce) {
+                armorRenderType = RenderType.energySwirl(TEXTURE_POLLY, 1, 1);
+            } else {
+                armorRenderType = RenderType.energySwirl(TEXTURE, 1, 1);
+            }
 
             packedLight = 15728880;
 

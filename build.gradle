@@ -100,6 +100,10 @@ dependencies {
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.4')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    implementation fg.deobf('curse.maven:guard-villagers-360203:6066968')
+    compileOnly fg.deobf('curse.maven:guard-villagers-360203:6066968')
+    runtimeOnly fg.deobf('curse.maven:guard-villagers-360203:6066968')
+
     compileOnly fg.deobf('curse.maven:just-enough-guns-820727:6405150')
     runtimeOnly fg.deobf('curse.maven:just-enough-guns-820727:6405150')
 }

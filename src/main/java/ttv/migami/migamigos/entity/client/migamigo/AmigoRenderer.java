@@ -45,7 +45,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
     @Override
     public Color getRenderColor(AmigoEntity animatable, float partialTick, int packedLight) {
         if (animatable.isHeartless()) {
-            return Color.BLACK;
+            return Color.GRAY;
         }
         else if (animatable.isEnemigo()) {
             return Color.DARK_GRAY;
@@ -56,8 +56,6 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
     public AmigoRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new AmigoModel());
         this.shadowRadius = 0.5f;
-
-        addRenderLayer(new EnemigoEyeLayer(this));
 
         // Armor Renderer
         addRenderLayer(new ItemArmorGeoLayer<>(this) {
@@ -210,6 +208,8 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                 super.renderStackForBone(poseStack, bone, stack, animatable, bufferSource, partialTick, packedLight, packedOverlay);
             }
         });
+
+        addRenderLayer(new EnemigoEyeLayer(this));
     }
 
     @Override
@@ -218,6 +218,12 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
 
         int eyeExpression = animatable.getEyeExpression();
 
+        if (bone.getName().matches("eyes")) {
+            bone.setHidden(animatable.isHeartless());
+        }
+        if (bone.getName().startsWith("cross")) {
+            bone.setHidden((animatable.isEnemigo() || animatable.isHeartless()));
+        }
         if (bone.getName().startsWith("glow")) {
             packedLight = 15728880;
         }
@@ -242,10 +248,6 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                        MultiBufferSource bufferSource, int packedLight) {
         float size = entity.getAmigo().getGeneral().getRenderSize();
         poseStack.scale(size, size, size);
-
-        if (entity.isHeartless()) {
-            packedLight = 15728880;
-        }
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
@@ -282,7 +284,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
         if (this.currentTick < 0 || this.currentTick != animatable.tickCount) {
             this.currentTick = animatable.tickCount;
 
-            if (animatable.isEnemigo() || animatable.isHeartless()) {
+            if (animatable.isEnemigo()) {
                 this.model.getBone("head").ifPresent(smoke -> {
                     Vector3d pos = smoke.getWorldPosition();
 

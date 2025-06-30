@@ -14,6 +14,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -49,6 +50,8 @@ import java.util.concurrent.CompletableFuture;
 @Mod(Reference.MOD_ID)
 public class Migamigos {
     public static boolean debugging = false;
+    public static boolean recruitsLoaded = false;
+    public static boolean guardsLoaded = false;
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
 
     public Migamigos() {
@@ -81,6 +84,8 @@ public class Migamigos {
         });
         MinecraftForge.EVENT_BUS.register(ServerTickHandler.class);
         MinecraftForge.EVENT_BUS.register(new ModCommandsRegister());
+        recruitsLoaded = ModList.get().isLoaded("recruits");
+        guardsLoaded = ModList.get().isLoaded("guardvillagers");
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -89,6 +94,7 @@ public class Migamigos {
         EntityRenderers.register(ModEntities.WAVELYN.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.CLAYMORE.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.SHYSAW.get(), AmigoRenderer::new);
+        EntityRenderers.register(ModEntities.POLLYPOUNCE.get(), AmigoRenderer::new);
 
         EntityRenderers.register(ModEntities.GENERIC_ARROW.get(), GenericArrowRenderer::new);
         EntityRenderers.register(ModEntities.SOUL_FIREBALL.get(), SoulFireballRenderer::new);

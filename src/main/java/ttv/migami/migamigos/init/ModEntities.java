@@ -11,10 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.entity.AmigoEntityType;
 import ttv.migami.migamigos.entity.StunEntity;
-import ttv.migami.migamigos.entity.amigo.Claymore;
-import ttv.migami.migamigos.entity.amigo.Cocogoat;
-import ttv.migami.migamigos.entity.amigo.Shysaw;
-import ttv.migami.migamigos.entity.amigo.Wavelyn;
+import ttv.migami.migamigos.entity.amigo.*;
 import ttv.migami.migamigos.entity.fx.GroundCracksEntity;
 import ttv.migami.migamigos.entity.fx.ScorchMarkEntity;
 import ttv.migami.migamigos.entity.projectile.GenericArrow;
@@ -78,6 +75,21 @@ public class ModEntities
     public static final RegistryObject<AmigoEntityType<Shysaw>> SHYSAW = REGISTER.register("shysaw",
             () -> new AmigoEntityType<>(
                     Shysaw::new,
+                    MobCategory.CREATURE,
+                    true,
+                    true,
+                    false,
+                    false,
+                    ImmutableSet.of(),
+                    EntityDimensions.scalable(0.6F, 1.8F),
+                    80,
+                    1,
+                    FeatureFlags.DEFAULT_FLAGS
+            )
+    );
+    public static final RegistryObject<AmigoEntityType<Pollypounce>> POLLYPOUNCE = REGISTER.register("pollypounce",
+            () -> new AmigoEntityType<>(
+                    Pollypounce::new,
                     MobCategory.CREATURE,
                     true,
                     true,

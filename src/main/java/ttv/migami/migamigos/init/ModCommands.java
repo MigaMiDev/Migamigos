@@ -28,15 +28,15 @@ public class ModCommands {
 
                 Commands.literal("migamigos")
                         .then(Commands.literal("summon")
-                                .then(Commands.literal("amigo")
-                                        .then(Commands.argument("entityType", ResourceLocationArgument.id())
-                                                .suggests((context, builder) -> {
-                                                    return SharedSuggestionProvider.suggestResource(
-                                                            ForgeRegistries.ENTITY_TYPES.getKeys().stream()
-                                                                    .filter(key -> ForgeRegistries.ENTITY_TYPES.getValue(key) instanceof AmigoEntityType),
-                                                            builder
-                                                    );
-                                                })
+                                .then(Commands.argument("entityType", ResourceLocationArgument.id())
+                                        .suggests((context, builder) -> {
+                                            return SharedSuggestionProvider.suggestResource(
+                                                    ForgeRegistries.ENTITY_TYPES.getKeys().stream()
+                                                            .filter(key -> ForgeRegistries.ENTITY_TYPES.getValue(key) instanceof AmigoEntityType),
+                                                    builder
+                                            );
+                                        })
+                                        .then(Commands.literal("amigo")
                                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                                         .executes(context -> {
                                                             CommandSourceStack source = context.getSource();
@@ -53,16 +53,7 @@ public class ModCommands {
                                                         })
                                                 )
                                         )
-                                )
-                                .then(Commands.literal("enemigo")
-                                        .then(Commands.argument("entityType", ResourceLocationArgument.id())
-                                                .suggests((context, builder) -> {
-                                                    return SharedSuggestionProvider.suggestResource(
-                                                            ForgeRegistries.ENTITY_TYPES.getKeys().stream()
-                                                                    .filter(key -> ForgeRegistries.ENTITY_TYPES.getValue(key) instanceof AmigoEntityType),
-                                                            builder
-                                                    );
-                                                })
+                                        .then(Commands.literal("enemigo")
                                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                                         .executes(context -> {
                                                             CommandSourceStack source = context.getSource();
@@ -79,16 +70,7 @@ public class ModCommands {
                                                         })
                                                 )
                                         )
-                                )
-                                .then(Commands.literal("heartless")
-                                        .then(Commands.argument("entityType", ResourceLocationArgument.id())
-                                                .suggests((context, builder) -> {
-                                                    return SharedSuggestionProvider.suggestResource(
-                                                            ForgeRegistries.ENTITY_TYPES.getKeys().stream()
-                                                                    .filter(key -> ForgeRegistries.ENTITY_TYPES.getValue(key) instanceof AmigoEntityType),
-                                                            builder
-                                                    );
-                                                })
+                                        .then(Commands.literal("heartless")
                                                 .then(Commands.argument("pos", Vec3Argument.vec3())
                                                         .executes(context -> {
                                                             CommandSourceStack source = context.getSource();
@@ -107,7 +89,6 @@ public class ModCommands {
                                         )
                                 )
                         )
-
         );
     }
 

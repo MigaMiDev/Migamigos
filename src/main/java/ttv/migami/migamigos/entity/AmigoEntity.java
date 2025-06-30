@@ -87,6 +87,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     private static final EntityDataAccessor<Integer> DATA_TOLERANCE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
 
     private static final EntityDataAccessor<Boolean> DATA_IS_PLAYING_ANIMATION = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<String> DATA_STATE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.STRING);
 
     private static final EntityDataAccessor<Boolean> DATA_IS_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_COMBO_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
@@ -441,6 +442,10 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         }
         if (!this.isAttacking() && --this.blinkTimer == 0) {
             this.setEyeExpression(0);
+        }
+
+        if (this.getTarget() != null && this.getTarget() == this.getPlayer()) {
+            this.setTarget(null);
         }
 
         if (this.getTarget() != null && this.getTarget().isDeadOrDying()) {
@@ -929,6 +934,9 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
+        if (this.isHeartless() || this.isEnemigo()) {
+            return null;
+        }
         return this.chime;
     }
 

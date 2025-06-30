@@ -93,9 +93,30 @@ public class AmigoGen extends AmigoProvider
                 .setRecruitingChance(0.25F)
                 .setTolerance(6)
                 .setSpeed(0.225F)
-                .setRenderSize(0.9F)
+                .setRenderSize(0.85F)
 
                 .setAttackCombo("saw_blade_combo", 4F, 95, 0.5F)
+                .setAttackSpecial("saw_slam", 5F, 0, 0.0F)
+                .setAttackUltimate("saw_spin", 3F, 1000, 0.5F)
+
+                .build());
+
+        this.addAmigo(new ResourceLocation(Reference.MOD_ID, "pollypounce"), Amigo.Builder.create()
+
+                // General
+                .setName("pollypounce")
+                .setFavoriteItem(Items.COD)
+                .setHealth(20.0F)
+                .setHealingTimer(20)
+                .setArmor(3.0F)
+                .setCustomWeapon(false)
+                .setHasSpecial(false)
+                .setRecruitingChance(0.25F)
+                .setTolerance(6)
+                .setSpeed(0.225F)
+                .setRenderSize(0.85F)
+
+                .setAttackCombo("parrot_flurry", 2F, 95, 0.0F)
                 .setAttackSpecial("saw_slam", 5F, 0, 0.0F)
                 .setAttackUltimate("saw_spin", 3F, 1000, 0.5F)
 
