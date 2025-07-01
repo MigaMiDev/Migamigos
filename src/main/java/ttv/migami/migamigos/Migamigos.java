@@ -4,6 +4,7 @@ import com.mrcrayfish.framework.api.FrameworkAPI;
 import com.mrcrayfish.framework.api.client.FrameworkClientAPI;
 import com.mrcrayfish.framework.api.event.PlayerEvents;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ParrotRenderer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -34,6 +35,7 @@ import ttv.migami.migamigos.datagen.EntityTagGen;
 import ttv.migami.migamigos.entity.client.StunEntityRenderer;
 import ttv.migami.migamigos.entity.client.effect.GroundMarkRenderer;
 import ttv.migami.migamigos.entity.client.migamigo.AmigoRenderer;
+import ttv.migami.migamigos.entity.client.projectile.AmigoFishingHookRenderer;
 import ttv.migami.migamigos.entity.client.projectile.GenericArrowRenderer;
 import ttv.migami.migamigos.entity.client.projectile.cocogoat.IceConeRenderer;
 import ttv.migami.migamigos.entity.client.projectile.wavelyn.SoulFireballRenderer;
@@ -95,8 +97,10 @@ public class Migamigos {
         EntityRenderers.register(ModEntities.CLAYMORE.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.SHYSAW.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.POLLYPOUNCE.get(), AmigoRenderer::new);
+        EntityRenderers.register(ModEntities.CAPTAIN_BEAKBEARD.get(), ParrotRenderer::new);
 
         EntityRenderers.register(ModEntities.GENERIC_ARROW.get(), GenericArrowRenderer::new);
+        EntityRenderers.register(ModEntities.AMIGO_FISHING_HOOK.get(), AmigoFishingHookRenderer::new);
         EntityRenderers.register(ModEntities.SOUL_FIREBALL.get(), SoulFireballRenderer::new);
 
         // Cocogoat

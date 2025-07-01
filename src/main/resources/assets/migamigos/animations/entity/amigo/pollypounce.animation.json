@@ -1531,6 +1531,11 @@
 					"scale": {
 						"vector": [0, 0, 0]
 					}
+				},
+				"drawn_cutlass": {
+					"scale": {
+						"vector": [1, 1, 1]
+					}
 				}
 			}
 		},

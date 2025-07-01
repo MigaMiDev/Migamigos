@@ -203,4 +203,12 @@ public class EntitySpawnEventHandler {
                         .get(BuiltinStructures.WOODLAND_MANSION))
                 ).isValid();
     }
+
+    private static boolean isInsideSwampHut(ServerLevel level, BlockPos pos) {
+        return level.structureManager().getStructureAt(
+                pos,
+                Objects.requireNonNull(level.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                        .get(BuiltinStructures.SWAMP_HUT))
+        ).isValid();
+    }
 }

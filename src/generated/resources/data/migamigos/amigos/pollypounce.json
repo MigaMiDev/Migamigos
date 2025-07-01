@@ -16,7 +16,7 @@
   },
   "general": {
     "armor": 3.0,
-    "customWeapon": false,
+    "customWeapon": true,
     "doesAttack": true,
     "favoriteItem": "minecraft:cod",
     "hasSpecial": false,

@@ -59,6 +59,7 @@ public class Pollypounce extends AmigoEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(5, new AmigoMeleeAttackGoal<>(this, 1.6));
+        //this.goalSelector.addGoal(7, new AmigoFishGoal(this, 1.0D));
     }
 
     @Override
@@ -175,15 +176,20 @@ public class Pollypounce extends AmigoEntity {
     }
 
     @Override
-    public void remove(Entity.RemovalReason pReason) {
-        super.remove(pReason);
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
 
-        if (!this.isHeartless()) {
-            Parrot polly = new Parrot(EntityType.PARROT, this.level());
-            polly.setVariant(Parrot.Variant.RED_BLUE);
-            polly.setCustomName(Component.literal("Captain Beakbeard"));
-            polly.setPos(this.position().add(0, 1, 0));
-            this.level().addFreshEntity(polly);
+        if (!this.isHeartless() && !this.level().isClientSide) {
+            Entity killer = this.getKillCredit();
+
+            if (killer instanceof LivingEntity livingKiller) {
+                CaptainBeakbeard polly = new CaptainBeakbeard(EntityType.PARROT, this.level());
+                polly.setVariant(Parrot.Variant.RED_BLUE);
+                polly.setCustomName(Component.literal("Captain Beakbeard"));
+                polly.setPos(this.position().add(0, 1, 0));
+                polly.setTarget(livingKiller);
+                this.level().addFreshEntity(polly);
+            }
         }
     }
 }

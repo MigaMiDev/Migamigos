@@ -1,6 +1,7 @@
 package ttv.migami.migamigos.event;
 
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
@@ -24,6 +25,7 @@ public class ModCommonEventBus {
         event.put(ModEntities.CLAYMORE.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.SHYSAW.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.POLLYPOUNCE.get(), AmigoEntity.createAttributes().build());
+        event.put(ModEntities.CAPTAIN_BEAKBEARD.get(), Parrot.createAttributes().build());
 
         event.put(ModEntities.ICE_LOTUS.get(), IceLotus.createAttributes().build());
         event.put(ModEntities.ICE_SHOWER.get(), HailShower.createAttributes().build());

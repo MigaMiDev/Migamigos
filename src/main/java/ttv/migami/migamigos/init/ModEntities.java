@@ -14,6 +14,7 @@ import ttv.migami.migamigos.entity.StunEntity;
 import ttv.migami.migamigos.entity.amigo.*;
 import ttv.migami.migamigos.entity.fx.GroundCracksEntity;
 import ttv.migami.migamigos.entity.fx.ScorchMarkEntity;
+import ttv.migami.migamigos.entity.projectile.AmigoFishingHook;
 import ttv.migami.migamigos.entity.projectile.GenericArrow;
 import ttv.migami.migamigos.entity.projectile.cocogoat.IceCone;
 import ttv.migami.migamigos.entity.projectile.wavelyn.SoulFireball;
@@ -102,8 +103,10 @@ public class ModEntities
                     FeatureFlags.DEFAULT_FLAGS
             )
     );
+    public static final RegistryObject<EntityType<CaptainBeakbeard>> CAPTAIN_BEAKBEARD = REGISTER.register("captain_beakbeard", () -> EntityType.Builder.<CaptainBeakbeard>of(CaptainBeakbeard::new, MobCategory.MISC).sized(0.5F, 0.9F).noSave().noSummon().build("captain_beakbeard"));
 
     public static final RegistryObject<EntityType<GenericArrow>> GENERIC_ARROW = REGISTER.register("generic_arrow", () -> EntityType.Builder.<GenericArrow>of(GenericArrow::new, MobCategory.MISC).sized(0.8F, 0.8F).noSave().noSummon().build("generic_arrow"));
+    public static final RegistryObject<EntityType<AmigoFishingHook>> AMIGO_FISHING_HOOK = REGISTER.register("amigo_fishing_hook", () -> EntityType.Builder.<AmigoFishingHook>of(AmigoFishingHook::new, MobCategory.MISC).sized(0.25F, 0.25F).noSave().noSummon().build("amigo_fishing_hook"));
 
     // Cocogoat
     public static final RegistryObject<EntityType<IceLotus>> ICE_LOTUS = REGISTER.register("ice_lotus", () -> EntityType.Builder.<IceLotus>of(IceLotus::new, MobCategory.MISC).sized(1.0F, 1.0F).noSummon().noSave().build("ice_lotus"));
