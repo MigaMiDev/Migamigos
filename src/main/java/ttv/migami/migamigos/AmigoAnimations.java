@@ -23,7 +23,8 @@ public class AmigoAnimations {
 
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericEmoteController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Emote", 0, state -> {
-            if (!animatable.getAmigoState().equals(AmigoState.SITTING) &&
+            if ((!animatable.getAmigoState().equals(AmigoState.SITTING) &&
+                    !animatable.getAmigoState().equals(AmigoState.EATING)) &&
                     (animatable.getAmigoState().equals(AmigoState.IDLE) ||
                     animatable.getAmigoState().equals(AmigoState.EMOTING)) && !state.isMoving()) {
                 switch (animatable.getEmote()) {

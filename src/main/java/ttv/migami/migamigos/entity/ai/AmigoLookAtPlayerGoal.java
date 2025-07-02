@@ -1,5 +1,6 @@
 package ttv.migami.migamigos.entity.ai;
 
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,6 +52,9 @@ public class AmigoLookAtPlayerGoal extends Goal {
     }
 
     public boolean canUse() {
+        if (this.amigo.isAttacking() || this.amigo.isAggressive()) {
+            return false;
+        }
         if (this.amigo.getRandom().nextFloat() >= this.probability) {
             return false;
         } else {
@@ -96,6 +100,10 @@ public class AmigoLookAtPlayerGoal extends Goal {
             if ((this.lookAt instanceof Player || this.lookAt instanceof AmigoEntity) && this.emote) {
                 this.amigo.setActiveEmote(AmigoEmotes.WAVE);
                 this.emote = false;
+                if (this.lookAt instanceof AmigoEntity amigoEntity) {
+                    amigoEntity.setActiveEmote(AmigoEmotes.WAVE);
+                    amigoEntity.lookAt(EntityAnchorArgument.Anchor.FEET, this.amigo.getEyePosition(1F));
+                }
             }
             --this.lookTime;
         }

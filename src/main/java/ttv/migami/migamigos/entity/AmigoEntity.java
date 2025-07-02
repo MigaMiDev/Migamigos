@@ -1,6 +1,7 @@
 package ttv.migami.migamigos.entity;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -241,7 +242,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ItemStack itemstack = player.getItemInHand(hand);
         Random random = new Random();
 
-        this.getLookControl().setLookAt(player.getX(), player.getEyeY(), player.getZ());
+        this.lookAt(EntityAnchorArgument.Anchor.FEET, player.getEyePosition(1F));
         if (this.getEmoteCooldown() <= 0) {
             this.setActiveEmote(AmigoEmotes.WAVE);
         }
