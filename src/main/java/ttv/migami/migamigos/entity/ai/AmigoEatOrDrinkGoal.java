@@ -20,6 +20,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import java.util.List;
 
@@ -57,6 +58,9 @@ public class AmigoEatOrDrinkGoal extends Goal {
         if (this.amigoEntity.isHeartless()) {
             return false;
         }
+        if (!this.amigoEntity.getAmigoState().equals(AmigoState.EATING)) {
+            return false;
+        }
 
         return !this.amigoEntity.isDeadOrDying();
     }
@@ -91,12 +95,12 @@ public class AmigoEatOrDrinkGoal extends Goal {
             } else if (this.milkDrinking) {
                 this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.MILK_BUCKET));
             }
-            this.amigoEntity.setIsEating(true);
+            this.amigoEntity.setAmigoState(AmigoState.EATING);
             this.amigoEntity.setIsFarming(false);
             this.amigoEntity.getNavigation().stop();
         }
         else {
-            this.amigoEntity.setIsEating(false);
+            this.amigoEntity.setAmigoState(AmigoState.IDLE);
         }
 
         if (this.shouldTriggerItemUseEffects()) {
@@ -292,7 +296,7 @@ public class AmigoEatOrDrinkGoal extends Goal {
         this.panicEating = false;
         this.milkDrinking = false;
         this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, this.amigoEntity.getDefaultItem().getDefaultInstance());
-        this.amigoEntity.setIsEating(false);
+        this.amigoEntity.setAmigoState(AmigoState.EATING);
     }
 
     private boolean shouldTriggerItemUseEffects() {

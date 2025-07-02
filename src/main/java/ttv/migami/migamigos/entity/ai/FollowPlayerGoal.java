@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import java.util.EnumSet;
 
@@ -57,7 +58,7 @@ public class FollowPlayerGoal extends Goal {
             return false;
         } else if (this.amigoEntity.distanceToSqr(livingentity) < (double)(this.startDistance * this.startDistance)) {
             return false;
-        } else if (this.amigoEntity.isEating()) {
+        } else if (this.amigoEntity.getAmigoState().equals(AmigoState.EATING)) {
             return false;
         } else {
             this.player = livingentity;

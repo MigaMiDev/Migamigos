@@ -23,7 +23,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.monster.Creeper;
@@ -45,6 +44,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import ttv.migami.migamigos.AmigoAnimations;
+import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.common.Amigo;
 import ttv.migami.migamigos.common.amigo.Action;
 import ttv.migami.migamigos.common.container.AmigoContainer;
@@ -66,12 +66,10 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     protected SoundEvent chime = null;
     private Action currentAction;
     private long comboStartTime;
-    protected int emoteTimer = 0;
     protected Item defaultItem = Items.IRON_SWORD;
     protected Item lastItem = Items.AIR;
 
-    protected final static int EMOTE_COOLDOWN = 100;
-    protected int emoteCooldown = EMOTE_COOLDOWN;
+    public final static int EMOTE_COOLDOWN = 100;
 
     private static final EntityDataAccessor<String> DATA_NAME = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.STRING);
 
@@ -87,24 +85,21 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     private static final EntityDataAccessor<Integer> DATA_TOLERANCE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
 
     private static final EntityDataAccessor<Boolean> DATA_IS_PLAYING_ANIMATION = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> DATA_STATE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> DATA_AMIGO_STATE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.STRING);
 
     private static final EntityDataAccessor<Boolean> DATA_IS_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_IS_COMBO_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_COMBO_COOLDOWN = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_IS_SPECIAL_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_SPECIAL_COOLDOWN = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_IS_ULTIMATE_ATTACKING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_ULTIMATE_COOLDOWN = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
+
     private static final EntityDataAccessor<Boolean> DATA_CONTAINER_OPEN = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<Boolean> DATA_IS_SITTING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_IS_EATING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_FARMING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_IS_HARVESTING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntityDataAccessor<Boolean> DATA_IS_EMOTING = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_EMOTE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_EMOTE_TIMER = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_EMOTE_COOLDOWN = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
 
     private static final EntityDataAccessor<Integer> DATA_EXPERIENCE = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_LEVEL = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.INT);
@@ -223,7 +218,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.goalSelector.addGoal(6, new FollowPlayerGoal(this, 1.6D, 8.0F, 100.0F, false));
         //this.goalSelector.addGoal(7, new AmigoFarmGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new WaterAvoidingAmigoStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(10, new AmigoLookAtPlayerGoal(this, Player.class, 20.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new PlayerHurtByTargetGoal(this));
@@ -246,11 +241,9 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ItemStack itemstack = player.getItemInHand(hand);
         Random random = new Random();
 
-        if (this.emoteCooldown <= 0) {
-            this.setIsEmoting(true);
-            this.setEmote(1);
-            this.emoteTimer = 40;
-            this.emoteCooldown = EMOTE_COOLDOWN;
+        this.getLookControl().setLookAt(player.getX(), player.getEyeY(), player.getZ());
+        if (this.getEmoteCooldown() <= 0) {
+            this.setActiveEmote(AmigoEmotes.WAVE);
         }
         this.playChime();
 
@@ -379,9 +372,27 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.discard();
     }
 
+
+    public void setActiveEmote(String emote) {
+        if (!emote.equals(AmigoEmotes.NONE)) {
+            this.setAmigoState(AmigoState.EMOTING);
+        }
+        if (emote.equals(AmigoEmotes.NONE)) {
+            this.setEmote(0);
+            this.setEmoteTimer(0);
+            this.setEmoteCooldown(0);
+        } else if (emote.equals(AmigoEmotes.WAVE)) {
+            this.setEmote(1);
+            this.setEmoteTimer(40);
+            this.setEmoteCooldown(EMOTE_COOLDOWN);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
+
+        Migamigos.LOGGER.atInfo().log(this.getAmigoState() + " From: " + this);
 
         if (this.isLeftHanded()) {
             this.setLeftHanded(false);
@@ -390,7 +401,9 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
             this.setItemSlot(EquipmentSlot.MAINHAND, this.getDefaultItem().getDefaultInstance());
         }
 
-        this.setIsSitting(this.isPassenger());
+        if (this.isPassenger()) {
+            this.setAmigoState(AmigoState.SITTING);
+        }
 
         if (this.isEnemigo()) {
             if (this.level().getDifficulty().equals(Difficulty.PEACEFUL)) {
@@ -418,18 +431,14 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
             this.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 1, false, false));
         }
 
-        /*if (this.isEmoting()) {
-            this.setItemSlot(EquipmentSlot.MAINHAND, Items.AIR.getDefaultInstance());
-        }*/
-        if (this.emoteTimer > 0) {
-            this.emoteTimer--;
+        if (this.getEmoteTimer() > 0) {
+            this.setEmoteTimer(this.getEmoteTimer() - 1);
         }
         else {
             this.setEmote(0);
-            this.setIsEmoting(false);
         }
-        if (this.emoteCooldown > 0) {
-            this.emoteCooldown--;
+        if (this.getEmoteCooldown() > 0) {
+            this.setEmoteCooldown(this.getEmoteCooldown() - 1);
         }
 
         if (this.hurtTime == 3) {
@@ -468,8 +477,10 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
             if (this.currentAction.isComplete()) {
                 this.currentAction = null;
             }
-            if (!this.isAttacking() && !this.isComboAttacking() &&
-                    !this.isSpecialAttacking() && !this.isUltimateAttacking()) {
+            if (!this.isAttacking() &&
+                    !this.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
+                    !this.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING) &&
+                    !this.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
                 this.currentAction = null;
             }
         }
@@ -551,10 +562,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     }
 
     public void stopAttacks() {
-        this.setAttacking(false);
-        this.setComboAttacking(false);
-        this.setSpecialAttacking(false);
-        this.setUltimateAttacking(false);
+        this.setAmigoState(AmigoState.IDLE);
         this.setPlayingAnimation(false);
     }
 
@@ -725,20 +733,20 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.entityData.set(DATA_IS_PLAYING_ANIMATION, playingAnimation);
     }
 
+    public String getAmigoState() {
+        return this.entityData.get(DATA_AMIGO_STATE);
+    }
+
+    public void setAmigoState(String state) {
+        this.entityData.set(DATA_AMIGO_STATE, state);
+    }
+
     public boolean isAttacking() {
         return this.entityData.get(DATA_IS_ATTACKING);
     }
 
-    public void setAttacking(boolean isAttacking) {
-        this.entityData.set(DATA_IS_ATTACKING, isAttacking);
-    }
-
-    public boolean isComboAttacking() {
-        return this.entityData.get(DATA_IS_COMBO_ATTACKING);
-    }
-
-    public void setComboAttacking(boolean isAttacking) {
-        this.entityData.set(DATA_IS_COMBO_ATTACKING, isAttacking);
+    public void setAttacking(boolean att) {
+        this.entityData.set(DATA_IS_ATTACKING, att);
     }
 
     public int getComboCooldown() {
@@ -749,28 +757,12 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.entityData.set(DATA_COMBO_COOLDOWN, cooldown);
     }
 
-    public boolean isSpecialAttacking() {
-        return this.entityData.get(DATA_IS_SPECIAL_ATTACKING);
-    }
-
-    public void setSpecialAttacking(boolean isAttacking) {
-        this.entityData.set(DATA_IS_SPECIAL_ATTACKING, isAttacking);
-    }
-
     public int getSpecialCooldown() {
         return this.entityData.get(DATA_SPECIAL_COOLDOWN);
     }
 
     public void setSpecialCooldown(int cooldown) {
         this.entityData.set(DATA_SPECIAL_COOLDOWN, cooldown);
-    }
-
-    public boolean isUltimateAttacking() {
-        return this.entityData.get(DATA_IS_ULTIMATE_ATTACKING);
-    }
-
-    public void setUltimateAttacking(boolean isAttacking) {
-        this.entityData.set(DATA_IS_ULTIMATE_ATTACKING, isAttacking);
     }
 
     public int getUltimateCooldown() {
@@ -801,22 +793,6 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.entityData.set(DATA_CONTAINER_OPEN, open);
     }
 
-    public boolean isSitting() {
-        return this.entityData.get(DATA_IS_SITTING);
-    }
-
-    public void setIsSitting(boolean sitting) {
-        this.entityData.set(DATA_IS_SITTING, sitting);
-    }
-
-    public boolean isEating() {
-        return this.entityData.get(DATA_IS_EATING);
-    }
-
-    public void setIsEating(boolean eating) {
-        this.entityData.set(DATA_IS_EATING, eating);
-    }
-
     public boolean isFarming() {
         return this.entityData.get(DATA_IS_FARMING);
     }
@@ -833,21 +809,28 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.entityData.set(DATA_IS_HARVESTING, harvesting);
     }
 
-    // Emoting
-    public boolean isEmoting() {
-        return this.entityData.get(DATA_IS_EMOTING);
-    }
-
-    public void setIsEmoting(boolean emoting) {
-        this.entityData.set(DATA_IS_EMOTING, emoting);
-    }
-
     public int getEmote() {
         return this.entityData.get(DATA_EMOTE);
     }
 
     public void setEmote(int emote) {
         this.entityData.set(DATA_EMOTE, emote);
+    }
+
+    public int getEmoteTimer() {
+        return this.entityData.get(DATA_EMOTE_TIMER);
+    }
+
+    public void setEmoteTimer(int emote) {
+        this.entityData.set(DATA_EMOTE_TIMER, emote);
+    }
+
+    public int getEmoteCooldown() {
+        return this.entityData.get(DATA_EMOTE_COOLDOWN);
+    }
+
+    public void setEmoteCooldown(int emote) {
+        this.entityData.set(DATA_EMOTE_COOLDOWN, emote);
     }
 
     // Additional values
@@ -951,6 +934,8 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
         this.entityData.define(DATA_NAME, "Amigo");
 
+        this.entityData.define(DATA_AMIGO_STATE, AmigoState.IDLE);
+
         this.entityData.define(DATA_IS_ENEMIGO, false);
         this.entityData.define(DATA_IS_HEARTLESS, false);
 
@@ -965,19 +950,15 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.entityData.define(DATA_TOLERANCE, maxTolerance);
         this.entityData.define(DATA_IS_PLAYING_ANIMATION, false);
         this.entityData.define(DATA_IS_ATTACKING, false);
-        this.entityData.define(DATA_IS_COMBO_ATTACKING, false);
         this.entityData.define(DATA_COMBO_COOLDOWN, 0);
-        this.entityData.define(DATA_IS_SPECIAL_ATTACKING, false);
         this.entityData.define(DATA_SPECIAL_COOLDOWN, 0);
-        this.entityData.define(DATA_IS_ULTIMATE_ATTACKING, false);
         this.entityData.define(DATA_ULTIMATE_COOLDOWN, 0);
         this.entityData.define(DATA_CONTAINER_OPEN, false);
-        this.entityData.define(DATA_IS_SITTING, false);
-        this.entityData.define(DATA_IS_EATING, false);
         this.entityData.define(DATA_IS_FARMING, false);
         this.entityData.define(DATA_IS_HARVESTING, false);
-        this.entityData.define(DATA_IS_EMOTING, false);
         this.entityData.define(DATA_EMOTE, 0);
+        this.entityData.define(DATA_EMOTE_TIMER, 0);
+        this.entityData.define(DATA_EMOTE_COOLDOWN, 0);
 
         this.entityData.define(EXTRA_HEALTH, 0.0F);
         this.entityData.define(EXTRA_POWER, 0.0F);

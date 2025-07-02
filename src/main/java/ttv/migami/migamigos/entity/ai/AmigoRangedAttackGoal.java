@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -42,7 +43,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
         if (this.amigo.isContainerOpen()) {
             return false;
         }
-        if (this.amigo.isEating() || this.amigo.isEmoting()) {
+        if (this.amigo.isPassenger()) {
             return false;
         }
         if (this.amigo.getTarget().isDeadOrDying()) {
@@ -73,9 +74,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
         this.seeTime = 0;
         this.amigo.stopUsingItem();
         this.amigo.setAttacking(false);
-        this.amigo.setSpecialAttacking(false);
-        this.amigo.setUltimateAttacking(false);
-        this.amigo.setComboAttacking(false);
+        this.amigo.setAmigoState(AmigoState.IDLE);
         this.amigo.setComboCooldown(20);
     }
 
@@ -119,33 +118,39 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
             boolean ultimateConditions = (enemyCount >= 5 || this.amigo.getTarget().getHealth() >= this.amigo.getHealth() || this.amigo.getHealth() <= this.amigo.getMaxHealth() / 3);
 
             if (this.amigo.getAmigo().getGeneral().hasUltimate() && ultimateConditions && !this.amigo.isHeartless() &&
-                    this.amigo.getUltimateCooldown() <= 0 && !this.amigo.isComboAttacking() &&
-                    !this.amigo.isSpecialAttacking()) {
+                    this.amigo.getUltimateCooldown() <= 0 &&
+                    !this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
+                    !this.amigo.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING)) {
                 {
-                    this.amigo.setUltimateAttacking(true);
+                    this.amigo.setAmigoState(AmigoState.ULTIMATE_ATTACKING);
                     this.amigo.setUltimateCooldown(this.ultimateCooldown);
                     this.amigo.startAttacking(this.amigo.ultimateAction());
                 }
             }
             else if (this.amigo.getAmigo().getGeneral().hasSpecial() && specialRange.intersects(this.amigo.getTarget().getBoundingBox()) && !this.amigo.isHeartless() &&
-                    this.amigo.getSpecialCooldown() <= 0 && !this.amigo.isComboAttacking() &&
-                    !this.amigo.isUltimateAttacking()) {
+                    this.amigo.getSpecialCooldown() <= 0 &&
+                    !this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
+                    !this.amigo.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
                 {
-                    this.amigo.setSpecialAttacking(true);
+                    this.amigo.setAmigoState(AmigoState.SPECIAL_ATTACKING);
                     this.amigo.setSpecialCooldown(this.specialCooldown);
                     this.amigo.startAttacking(this.amigo.specialAction());
                 }
             }
             else if (attackRange.intersects(this.amigo.getTarget().getBoundingBox()) &&
-                    this.amigo.getComboCooldown() <= 0 && !this.amigo.isSpecialAttacking() &&
-                    !this.amigo.isUltimateAttacking()) {
+                    this.amigo.getComboCooldown() <= 0 &&
+                    !this.amigo.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING) &&
+                    !this.amigo.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
                 {
-                    this.amigo.setComboAttacking(true);
+                    this.amigo.setAmigoState(AmigoState.COMBO_ATTACKING);
                     this.amigo.setComboCooldown(this.comboCooldown);
                     this.amigo.startAttacking(this.amigo.basicAction());
                 }
             }
-            else if ((!attackRange.intersects(this.amigo.getTarget().getBoundingBox()) && !specialRange.intersects(this.amigo.getTarget().getBoundingBox())) || (!this.amigo.isComboAttacking() && !this.amigo.isSpecialAttacking() && !this.amigo.isUltimateAttacking())) {
+            else if ((!attackRange.intersects(this.amigo.getTarget().getBoundingBox()) && !specialRange.intersects(this.amigo.getTarget().getBoundingBox())) ||
+                    (!this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
+                            !this.amigo.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING) &&
+                            !this.amigo.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING))) {
                 this.amigo.stopAttacks();
                 this.amigo.getNavigation().moveTo(target, this.speedModifier);
             }

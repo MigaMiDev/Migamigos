@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -55,7 +56,7 @@ public class AmigoFarmGoal extends Goal {
         if (this.amigoEntity.isFollowing()) {
             return false;
         }
-        if (this.amigoEntity.isEating() || this.amigoEntity.isEmoting()) {
+        if (!this.amigoEntity.getAmigoState().equals(AmigoState.WORKING)) {
             this.amigoEntity.getNavigation().stop();
             return false;
         }
@@ -149,7 +150,7 @@ public class AmigoFarmGoal extends Goal {
     }
 
     private void moveToCrop() {
-        if (this.targetCropPos != null && !this.amigoEntity.isEating() && !this.amigoEntity.isEmoting()) {
+        if (this.targetCropPos != null && this.amigoEntity.getAmigoState().equals(AmigoState.WORKING)) {
             this.amigoEntity.setIsHarvesting(false);
             this.amigoEntity.getNavigation().moveTo(this.targetCropPos.getX() + 0.5, this.targetCropPos.getY(), this.targetCropPos.getZ() + 0.5, this.speed);
         }
@@ -247,7 +248,7 @@ public class AmigoFarmGoal extends Goal {
 
         double distanceToChest = this.amigoEntity.position().distanceTo(Vec3.atCenterOf(this.chestPos));
 
-        if (distanceToChest > 2.0 && !this.amigoEntity.isEating() && !this.amigoEntity.isEmoting()) {
+        if (distanceToChest > 2.0 && this.amigoEntity.getAmigoState().equals(AmigoState.WORKING)) {
             this.amigoEntity.getNavigation().moveTo(this.chestPos.getX() + 0.5, this.chestPos.getY() + 0.5, this.chestPos.getZ() + 0.5, 1.0);
         } else {
             if (this.depositTicks == 0) {

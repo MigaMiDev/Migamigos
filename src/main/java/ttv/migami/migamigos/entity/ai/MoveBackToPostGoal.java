@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +22,7 @@ public class MoveBackToPostGoal extends RandomStrollGoal {
     @Override
     public boolean canUse() {
         if (this.mob instanceof AmigoEntity amigoEntity) {
-            if (amigoEntity.isFarming() || amigoEntity.isEating() || amigoEntity.isEmoting()) {
+            if (!amigoEntity.getAmigoState().equals(AmigoState.IDLE) && !amigoEntity.getAmigoState().equals(AmigoState.WALKING)) {
                 return false;
             }
         }

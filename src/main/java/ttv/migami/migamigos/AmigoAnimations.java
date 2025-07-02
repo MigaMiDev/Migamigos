@@ -7,6 +7,7 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 public class AmigoAnimations {
     public static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
@@ -22,7 +23,9 @@ public class AmigoAnimations {
 
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericEmoteController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Emote", 0, state -> {
-            if (animatable.isEmoting() && !state.isMoving()) {
+            if (!animatable.getAmigoState().equals(AmigoState.SITTING) &&
+                    (animatable.getAmigoState().equals(AmigoState.IDLE) ||
+                    animatable.getAmigoState().equals(AmigoState.EMOTING)) && !state.isMoving()) {
                 switch (animatable.getEmote()) {
                     case 1: {
                         return state.setAndContinue(EMOTE_WAVE);
@@ -36,7 +39,7 @@ public class AmigoAnimations {
 
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericEatController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Eat", 0, state -> {
-            if (animatable.isEating()) {
+            if (animatable.getAmigoState().equals(AmigoState.EATING)) {
                 return state.setAndContinue(EAT);
             }
 
@@ -50,16 +53,20 @@ public class AmigoAnimations {
      */
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericWalkIdleController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Walk/Idle", 0, state -> {
-            if (!animatable.isEating()) {
-                if (animatable.isSitting()) {
-                    state.setAndContinue(SIT);
-                } else if (!animatable.isAttacking()) {
-                    if(state.isMoving()) {
-                        state.getController().setAnimationSpeed(1.6);
-                    } else {
-                        state.getController().setAnimationSpeed(1.0);
+            if (animatable.getAmigoState().equals(AmigoState.SITTING)) {
+                state.setAndContinue(SIT);
+            } else if(state.isMoving()) {
+                state.getController().setAnimationSpeed(1.6);
+                state.setAndContinue(WALK);
+            } else {
+                state.getController().setAnimationSpeed(1.0);
+                if (state.getController().getCurrentAnimation() != null) {
+                    if (!state.getController().getCurrentAnimation().animation().name().startsWith("emote")) {
+                        state.setAndContinue(IDLE);
+                        return PlayState.CONTINUE;
                     }
-                    state.setAndContinue(state.isMoving() ? WALK : IDLE);
+                } else {
+                    state.setAndContinue(IDLE);
                 }
             }
 
@@ -71,8 +78,8 @@ public class AmigoAnimations {
      * Will play the farm animation if the animatable is not considered moving
      */
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericFarmController(AmigoEntity animatable) {
-        return new AnimationController<>(animatable, "Farm", 0, state -> {
-            if (!animatable.isEmoting() && !animatable.isEating() && !state.isMoving() && !animatable.isAttacking() && animatable.isHarvesting() && animatable.isFarming()) {
+        return new AnimationController<>(animatable, "Work", 0, state -> {
+            if (animatable.getAmigoState().equals(AmigoState.WORKING) && !state.isMoving()) {
                 return state.setAndContinue(FARM);
             }
 
@@ -89,13 +96,13 @@ public class AmigoAnimations {
      */
     public static <T extends LivingEntity & GeoAnimatable> AnimationController<AmigoEntity> genericAttackAnimation(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Attack", 0, state -> {
-            if (animatable.isUltimateAttacking()) {
+            if (animatable.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
                 return state.setAndContinue(ATTACK_ULTIMATE);
             }
-            if (animatable.isSpecialAttacking()) {
+            else if (animatable.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING)) {
                 return state.setAndContinue(ATTACK_SPECIAL);
             }
-            if (animatable.isComboAttacking() && animatable.isAttacking()) {
+            else if (animatable.getAmigoState().equals(AmigoState.COMBO_ATTACKING)) {
                     return state.setAndContinue(ATTACK_COMBO);
             }
 

@@ -19,6 +19,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer;
 import software.bernie.geckolib.renderer.layer.ItemArmorGeoLayer;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -129,7 +130,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
                     if (animatable.getAmigo().getGeneral().hasCustomWeapon() && animatable.getMainHandItem().is(animatable.getDefaultItem())) {
                         return null;
                     }
-                    if (animatable.isEmoting() || animatable.isSitting()) {
+                    if (animatable.getAmigoState().equals(AmigoState.EMOTING) || animatable.getAmigoState().equals(AmigoState.SITTING)) {
                         return null;
                     }
                 }
@@ -228,7 +229,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
             packedLight = 15728880;
         }
         if (bone.getName().equals("custom_item")) {
-            bone.setHidden(!animatable.getMainHandItem().is(animatable.getDefaultItem()) || (animatable.isEmoting() || animatable.isSitting()));
+            bone.setHidden(!animatable.getMainHandItem().is(animatable.getDefaultItem()) || (animatable.getAmigoState().equals(AmigoState.EMOTING) || animatable.getAmigoState().equals(AmigoState.SITTING)));
         }
         if (bone.getName().startsWith("eyes_")) {
             switch (eyeExpression) {

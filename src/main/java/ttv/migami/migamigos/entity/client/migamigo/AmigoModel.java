@@ -9,6 +9,7 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 public class AmigoModel extends GeoModel<AmigoEntity> {
 
@@ -36,7 +37,7 @@ public class AmigoModel extends GeoModel<AmigoEntity> {
     @Override
     public void setCustomAnimations(AmigoEntity animatable, long instanceId, AnimationState<AmigoEntity> animationState) {
         CoreGeoBone head = getAnimationProcessor().getBone("head");
-        if (head != null && !animatable.isAttacking() && !animatable.isEating()) {
+        if (head != null && !animatable.isAttacking() && !animatable.getAmigoState().equals(AmigoState.EATING)) {
             EntityModelData entityData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
             head.setRotX(head.getRotX() + entityData.headPitch() * Mth.DEG_TO_RAD);
             head.setRotY(head.getRotY() + entityData.netHeadYaw() * Mth.DEG_TO_RAD);

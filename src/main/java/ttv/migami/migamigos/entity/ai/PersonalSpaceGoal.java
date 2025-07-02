@@ -98,7 +98,6 @@ public class PersonalSpaceGoal extends Goal {
 
         this.amigoEntity.teleportTo(newX, newY, newZ);
         this.amigoEntity.level().broadcastEntityEvent(this.amigoEntity, (byte) 46);
-        this.amigoEntity.setIsSitting(false);
     }
 
     private boolean isPlayerInVehicle() {

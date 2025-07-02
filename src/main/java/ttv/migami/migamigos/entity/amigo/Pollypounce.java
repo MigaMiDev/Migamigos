@@ -89,7 +89,7 @@ public class Pollypounce extends AmigoEntity {
         double coneAngle = Math.toRadians(45);
 
         double attackRange = 3.0;
-        AABB attackBox = this.getBoundingBox().inflate(1);
+        AABB attackBox = this.getBoundingBox().inflate(2);
         List<LivingEntity> nearbyEntities = this.level().getEntitiesOfClass(
                 LivingEntity.class,
                 this.getBoundingBox().inflate(attackRange),
