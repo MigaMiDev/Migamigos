@@ -58,9 +58,6 @@ public class AmigoEatOrDrinkGoal extends Goal {
         if (this.amigoEntity.isHeartless()) {
             return false;
         }
-        if (!this.amigoEntity.getAmigoState().equals(AmigoState.EATING)) {
-            return false;
-        }
 
         return !this.amigoEntity.isDeadOrDying();
     }
@@ -99,7 +96,9 @@ public class AmigoEatOrDrinkGoal extends Goal {
             this.amigoEntity.setIsFarming(false);
             this.amigoEntity.getNavigation().stop();
         }
-        else {
+        else if (!this.amigoEntity.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
+                !this.amigoEntity.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING) &&
+                !this.amigoEntity.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
             this.amigoEntity.setAmigoState(AmigoState.IDLE);
         }
 

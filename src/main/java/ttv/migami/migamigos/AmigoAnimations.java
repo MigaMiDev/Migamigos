@@ -21,6 +21,44 @@ public class AmigoAnimations {
 
     public static final RawAnimation EMOTE_WAVE = RawAnimation.begin().thenPlay("emote_wave");
 
+    /* Epic Controller, it handles all animations, its easier to organize priorities. */
+    public static <T extends GeoAnimatable> AnimationController<AmigoEntity> epicAnimationController(AmigoEntity animatable) {
+        return new AnimationController<>(animatable, "Controller", 0, state -> {
+            state.getController().setAnimationSpeed(1.0);
+
+            if (animatable.getAmigoState().equals(AmigoState.SITTING)) {
+                return state.setAndContinue(SIT);
+            }
+            else if (animatable.getAmigoState().equals(AmigoState.EATING)) {
+                return state.setAndContinue(EAT);
+            }
+            else if (animatable.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
+                return state.setAndContinue(ATTACK_ULTIMATE);
+            }
+            else if (animatable.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING)) {
+                return state.setAndContinue(ATTACK_SPECIAL);
+            }
+            else if (animatable.getAmigoState().equals(AmigoState.COMBO_ATTACKING)) {
+                return state.setAndContinue(ATTACK_COMBO);
+            }
+            else if(state.isMoving()) {
+                state.getController().setAnimationSpeed(1.6);
+                return state.setAndContinue(WALK);
+            }
+            else if (!state.isMoving() && (animatable.getAmigoState().equals(AmigoState.IDLE) ||
+                    animatable.getAmigoState().equals(AmigoState.EMOTING))) {
+                switch (animatable.getEmote()) {
+                    case 1: {
+                        return state.setAndContinue(EMOTE_WAVE);
+                    }
+                }
+            }
+            state.setAndContinue(IDLE);
+
+            return PlayState.CONTINUE;
+        });
+    }
+
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> genericEmoteController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Emote", 0, state -> {
             if ((!animatable.getAmigoState().equals(AmigoState.SITTING) &&
@@ -62,7 +100,8 @@ public class AmigoAnimations {
             } else {
                 state.getController().setAnimationSpeed(1.0);
                 if (state.getController().getCurrentAnimation() != null) {
-                    if (!state.getController().getCurrentAnimation().animation().name().startsWith("emote")) {
+                    if (!state.getController().getCurrentAnimation().animation().name().startsWith("emote") &&
+                            !state.getController().getCurrentAnimation().animation().name().startsWith("attack")) {
                         state.setAndContinue(IDLE);
                         return PlayState.CONTINUE;
                     }
@@ -106,8 +145,6 @@ public class AmigoAnimations {
             else if (animatable.getAmigoState().equals(AmigoState.COMBO_ATTACKING)) {
                     return state.setAndContinue(ATTACK_COMBO);
             }
-
-            state.getController().forceAnimationReset();
 
             return PlayState.STOP;
         });

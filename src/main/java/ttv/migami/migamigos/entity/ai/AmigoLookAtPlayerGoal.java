@@ -7,8 +7,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import ttv.migami.migamigos.common.network.ServerPlayHandler;
 import ttv.migami.migamigos.entity.AmigoEmotes;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.AmigoState;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -97,13 +99,16 @@ public class AmigoLookAtPlayerGoal extends Goal {
         if (this.lookAt.isAlive()) {
             double $$0 = this.onlyHorizontal ? this.amigo.getEyeY() : this.lookAt.getEyeY();
             this.amigo.getLookControl().setLookAt(this.lookAt.getX(), $$0, this.lookAt.getZ());
-            if ((this.lookAt instanceof Player || this.lookAt instanceof AmigoEntity) && this.emote) {
-                this.amigo.setActiveEmote(AmigoEmotes.WAVE);
-                this.emote = false;
-                if (this.lookAt instanceof AmigoEntity amigoEntity) {
+            if (this.emote && this.amigo.getAmigoState().equals(AmigoState.IDLE)) {
+                if (this.lookAt instanceof Player player && !                                                                                                                      ServerPlayHandler.shouldHurt(this.amigo, player)) {
+                    this.amigo.setActiveEmote(AmigoEmotes.WAVE);
+                }
+                if (this.lookAt instanceof AmigoEntity amigoEntity && !ServerPlayHandler.shouldHurt(this.amigo, amigoEntity)) {
+                    this.amigo.setActiveEmote(AmigoEmotes.WAVE);
                     amigoEntity.setActiveEmote(AmigoEmotes.WAVE);
                     amigoEntity.lookAt(EntityAnchorArgument.Anchor.FEET, this.amigo.getEyePosition(1F));
                 }
+                this.emote = false;
             }
             --this.lookTime;
         }

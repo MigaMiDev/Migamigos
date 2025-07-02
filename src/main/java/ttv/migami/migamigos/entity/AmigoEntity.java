@@ -219,7 +219,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.goalSelector.addGoal(6, new FollowPlayerGoal(this, 1.6D, 8.0F, 100.0F, false));
         //this.goalSelector.addGoal(7, new AmigoFarmGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new WaterAvoidingAmigoStrollGoal(this, 1.0D));
-        this.goalSelector.addGoal(10, new AmigoLookAtPlayerGoal(this, Player.class, 20.0F));
+        this.goalSelector.addGoal(10, new AmigoLookAtPlayerGoal(this, LivingEntity.class, 20.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
         this.targetSelector.addGoal(1, new PlayerHurtByTargetGoal(this));
@@ -1107,11 +1107,12 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(AmigoAnimations.genericWalkIdleController(this));
+        /*controllers.add(AmigoAnimations.genericWalkIdleController(this));
         controllers.add(AmigoAnimations.genericEmoteController(this));
         controllers.add(AmigoAnimations.genericEatController(this));
         controllers.add(AmigoAnimations.genericFarmController(this));
-        controllers.add(AmigoAnimations.genericAttackAnimation(this)
+        controllers.add(AmigoAnimations.genericAttackAnimation(this)*/
+        controllers.add(AmigoAnimations.epicAnimationController(this)
                 .setParticleKeyframeHandler((customInstructionKeyframeEvent -> {
                     String instruction = customInstructionKeyframeEvent.getKeyframeData().getEffect()   ;
                     switch(instruction) {

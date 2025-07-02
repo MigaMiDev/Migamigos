@@ -5,7 +5,6 @@ import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 import ttv.migami.migamigos.entity.AmigoEntity;
-import ttv.migami.migamigos.entity.AmigoState;
 
 import javax.annotation.Nullable;
 
@@ -24,9 +23,6 @@ public class WaterAvoidingAmigoStrollGoal extends RandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        if (this.mob instanceof AmigoEntity amigoEntity && !amigoEntity.getAmigoState().equals(AmigoState.WALKING)) {
-            return false;
-        }
         return super.canUse();
     }
 
