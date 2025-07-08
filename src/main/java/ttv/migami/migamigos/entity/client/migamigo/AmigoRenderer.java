@@ -49,6 +49,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
             return Color.GRAY;
         }
         else if (animatable.isEnemigo()) {
+            //return new Color(0X320032);
             return Color.DARK_GRAY;
         }
         return Color.WHITE;

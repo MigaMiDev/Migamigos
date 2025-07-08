@@ -21,7 +21,7 @@ public class AmigoAnimations {
 
     public static final RawAnimation EMOTE_WAVE = RawAnimation.begin().thenPlay("emote_wave");
 
-    /* Epic Controller, it handles all animations, its easier to organize priorities. */
+    /* Epic Controller, it handles all animations, it's easier to organize priorities. */
     public static <T extends GeoAnimatable> AnimationController<AmigoEntity> epicAnimationController(AmigoEntity animatable) {
         return new AnimationController<>(animatable, "Controller", 0, state -> {
             state.getController().setAnimationSpeed(1.0);

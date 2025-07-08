@@ -295,7 +295,7 @@ public class AmigoEatOrDrinkGoal extends Goal {
         this.panicEating = false;
         this.milkDrinking = false;
         this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, this.amigoEntity.getDefaultItem().getDefaultInstance());
-        this.amigoEntity.setAmigoState(AmigoState.EATING);
+        this.amigoEntity.setAmigoState(AmigoState.IDLE);
     }
 
     private boolean shouldTriggerItemUseEffects() {
