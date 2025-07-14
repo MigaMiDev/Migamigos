@@ -45,7 +45,6 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import ttv.migami.migamigos.AmigoAnimations;
-import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.common.Amigo;
 import ttv.migami.migamigos.common.amigo.Action;
 import ttv.migami.migamigos.common.container.AmigoContainer;
@@ -391,7 +390,11 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     public void tick() {
         super.tick();
 
-        Migamigos.LOGGER.atInfo().log(this.getAmigoState() + " From: " + this);
+        //Migamigos.LOGGER.atInfo().log(this.getAmigoState() + " From: " + this);
+
+        if (this.isDeadOrDying()) {
+            this.stopCurrentAction();
+        }
 
         if (this.isLeftHanded()) {
             this.setLeftHanded(false);
@@ -575,6 +578,10 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     public Action getCurrentAction() {
         return this.currentAction;
+    }
+
+    public void stopCurrentAction() {
+        this.currentAction = null;
     }
 
     public void startAction(Action combo) {

@@ -93,6 +93,7 @@ public class AmigoEatOrDrinkGoal extends Goal {
                 this.amigoEntity.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.MILK_BUCKET));
             }
             this.amigoEntity.setAmigoState(AmigoState.EATING);
+            this.amigoEntity.stopCurrentAction();
             this.amigoEntity.setIsFarming(false);
             this.amigoEntity.getNavigation().stop();
         }
