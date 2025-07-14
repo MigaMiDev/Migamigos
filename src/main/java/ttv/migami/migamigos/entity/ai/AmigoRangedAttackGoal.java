@@ -122,6 +122,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
                     !this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
                     !this.amigo.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING)) {
                 {
+                    this.amigo.setComboCooldown(0);
                     this.amigo.getNavigation().stop();
                     this.amigo.setAmigoState(AmigoState.ULTIMATE_ATTACKING);
                     this.amigo.setUltimateCooldown(this.ultimateCooldown);
@@ -133,6 +134,7 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
                     !this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
                     !this.amigo.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING)) {
                 {
+                    this.amigo.setComboCooldown(0);
                     this.amigo.getNavigation().stop();
                     this.amigo.setAmigoState(AmigoState.SPECIAL_ATTACKING);
                     this.amigo.setSpecialCooldown(this.specialCooldown);
@@ -149,13 +151,17 @@ public class AmigoRangedAttackGoal<T extends Mob & RangedAttackMob> extends Goal
                     this.amigo.setComboCooldown(this.comboCooldown);
                     this.amigo.startAttacking(this.amigo.basicAction());
                 }
+            } else if (attackRange.intersects(this.amigo.getTarget().getBoundingBox()) || specialRange.intersects(this.amigo.getTarget().getBoundingBox())) {
+                this.amigo.getNavigation().stop();
             }
             else if ((!attackRange.intersects(this.amigo.getTarget().getBoundingBox()) && !specialRange.intersects(this.amigo.getTarget().getBoundingBox())) ||
                     (!this.amigo.getAmigoState().equals(AmigoState.COMBO_ATTACKING) &&
                             !this.amigo.getAmigoState().equals(AmigoState.SPECIAL_ATTACKING) &&
                             !this.amigo.getAmigoState().equals(AmigoState.ULTIMATE_ATTACKING))) {
-                this.amigo.stopAttacks();
-                this.amigo.getNavigation().moveTo(target, this.speedModifier);
+                if (this.amigo.getCurrentAction() == null) {
+                    this.amigo.stopAttacks();
+                    this.amigo.getNavigation().moveTo(target, this.speedModifier);
+                }
             }
 
             double targetEyeY = target.getEyeY();

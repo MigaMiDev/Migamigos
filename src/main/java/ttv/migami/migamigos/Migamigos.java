@@ -117,7 +117,6 @@ public class Migamigos {
         event.enqueueWork(() ->
         {
             PacketHandler.init();
-            PacketHandler.register();
             FrameworkAPI.registerLoginData(new ResourceLocation(Reference.MOD_ID, "network_amigo_manager"), NetworkAmigoManager.LoginData::new);
             FrameworkAPI.registerLoginData(new ResourceLocation(Reference.MOD_ID, "custom_amigo_manager"), CustomAmigoManager.LoginData::new);
         });

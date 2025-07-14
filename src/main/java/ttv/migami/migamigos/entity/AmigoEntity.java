@@ -51,8 +51,6 @@ import ttv.migami.migamigos.common.amigo.Action;
 import ttv.migami.migamigos.common.container.AmigoContainer;
 import ttv.migami.migamigos.entity.ai.*;
 import ttv.migami.migamigos.init.ModSounds;
-import ttv.migami.migamigos.network.PacketHandler;
-import ttv.migami.migamigos.network.packet.AttackStop;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -565,6 +563,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     public void stopAttacks() {
         this.setAmigoState(AmigoState.IDLE);
         this.setPlayingAnimation(false);
+        this.currentAction = null;
     }
 
     public void startAttacking(Action action) {
@@ -572,6 +571,10 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         this.setAttacking(true);
         this.setPlayingAnimation(true);
         this.getNavigation().stop();
+    }
+
+    public Action getCurrentAction() {
+        return this.currentAction;
     }
 
     public void startAction(Action combo) {
@@ -1121,15 +1124,6 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
                         case "eyesClosed" -> this.setEyeExpression(2);
                         case "eyesWinkRight" -> this.setEyeExpression(3);
                         case "eyesWinkLeft" -> this.setEyeExpression(4);
-                    }
-                }))
-                .setCustomInstructionKeyframeHandler((customInstructionKeyframeEvent -> {
-                    String instruction = customInstructionKeyframeEvent.getKeyframeData().getInstructions();
-                    switch(instruction) {
-                        case "stopAttacking;" -> PacketHandler.INSTANCE.sendToServer(new AttackStop(this.getId()));
-                        /*case "basicAttack;" -> PacketHandler.INSTANCE.sendToServer(new AttackPacket(this.getId()));
-                        case "attackSpecial;" -> PacketHandler.INSTANCE.sendToServer(new SpecialAttackPacket(this.getId()));
-                        case "attackUltimate;" -> PacketHandler.INSTANCE.sendToServer(new UltimateAttackPacket(this.getId()));*/
                     }
                 })));
     }
