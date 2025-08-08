@@ -45,11 +45,13 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import ttv.migami.migamigos.AmigoAnimations;
+import ttv.migami.migamigos.Config;
 import ttv.migami.migamigos.common.Amigo;
 import ttv.migami.migamigos.common.amigo.Action;
 import ttv.migami.migamigos.common.container.AmigoContainer;
 import ttv.migami.migamigos.entity.ai.*;
 import ttv.migami.migamigos.init.ModSounds;
+import ttv.migami.migamigos.init.ModTags;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -142,7 +144,6 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
      *  The position of this Amigo's Post (where the Amigo will go back after being set not to follow).
      */
     private static final EntityDataAccessor<Vector3f> DATA_POST_POS = SynchedEntityData.defineId(AmigoEntity.class, EntityDataSerializers.VECTOR3);
-
 
     private final SimpleContainer inventory = new SimpleContainer(14);
 
@@ -786,6 +787,25 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
 
     public boolean wantsToAttack(LivingEntity pTarget, LivingEntity pOwner) {
         return true;
+    }
+
+    public boolean canRideWithPlayer(Player player) {
+        Entity vehicle = player.getVehicle();
+
+        if (vehicle == null || this.getVehicle() != null) {
+            return false;
+        }
+
+        if (!Config.COMMON.gameplay.rideWithPlayer.get()) {
+            return false;
+        }
+
+        if (vehicle.getPassengers().size() > 1) {
+            return false;
+        }
+
+        // Allow players to add this behaviour to other entity vehicles instead of only horses
+        return vehicle.getType().is(ModTags.Entities.RIDE_WITH_PLAYER);
     }
 
     public int getTolerance() {

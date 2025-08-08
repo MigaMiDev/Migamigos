@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -88,6 +89,27 @@ public class AmigoScreen extends AbstractContainerScreen<AmigoContainer> {
                             .pos(startX, buttonY)
                             .size(buttonWidth, buttonHeight)
                             .build()
+            );
+        }
+
+        LocalPlayer player = Minecraft.getInstance().player;
+
+        // There's should be probably a better way to add new buttons and actions
+        // Maybe using enums instead of raw ints to encode the action?
+        if (player != null && amigoEntity.canRideWithPlayer(player)) {
+            int buttonY = startY + buttonData.size() * (buttonHeight + buttonSpacing);
+            String format = Component.translatable("gui.migamigos.amigo_inventory.ride_with_player").getString();
+            String translation = player.getVehicle() == null ? format :
+                format.formatted(player.getVehicle().getName().getString());
+
+            this.addRenderableWidget(
+                Button.builder(Component.literal(translation), button -> {
+                    onButtonClick(buttonData.size());
+                    button.setMessage(Component.literal(translation));
+                })
+                .pos(startX, buttonY)
+                .size(buttonWidth, buttonHeight)
+                .build()
             );
         }
     }

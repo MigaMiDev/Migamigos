@@ -1,3 +1,4 @@
-// 1.20.1	2025-01-20T22:20:20.8217763	Tags for minecraft:entity_type mod id migamigos
+// 1.20.1	2025-08-08T14:46:07.9263986	Tags for minecraft:entity_type mod id migamigos
 3af55fd03ac813a54d22ce970de7a023e9f7fc5c data/migamigos/tags/entity_types/amigo.json
+0b981afcbd0a2683b0496a6db6f7af8ca9f5cee0 data/migamigos/tags/entity_types/ride_with_player.json
 b5e2c323f72095a6ebe8fd4885ba5d9afcef66dc data/migamigos/tags/entity_types/undead.json
