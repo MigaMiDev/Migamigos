@@ -18,11 +18,11 @@ public class CommonEntityEvents {
         if (event.getEntityMounting() instanceof ServerPlayer) {
             Entity vehicle = event.getEntityBeingMounted();
 
-            if (vehicle != null) {
-                for (Entity entity : vehicle.getPassengers()) {
-                    if (entity instanceof AmigoEntity amigo) {
-                        amigo.stopRiding();
-                    }
+            if (vehicle == null) return;
+
+            for (Entity entity : vehicle.getPassengers()) {
+                if (entity instanceof AmigoEntity amigo && amigo.isFollowing()) {
+                    amigo.stopRiding();
                 }
             }
         }

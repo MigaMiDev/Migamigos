@@ -132,9 +132,11 @@ public class ServerPlayHandler
                     }
                     break;
                 }
-                // Ride with player
+                // Ride/stop riding with player
                 case 5: {
-                    if (amigoEntity.canRideWithPlayer(player)) {
+                    if (amigoEntity.getVehicle() != null) {
+                        amigoEntity.stopRiding();
+                    } else if (amigoEntity.canRideWithPlayer(player)) {
                         amigoEntity.startRiding(Objects.requireNonNull(player.getVehicle()));
                     }
                 }

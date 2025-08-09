@@ -10,8 +10,10 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -92,25 +94,18 @@ public class AmigoScreen extends AbstractContainerScreen<AmigoContainer> {
             );
         }
 
-        LocalPlayer player = Minecraft.getInstance().player;
+        {
+            // index should be 5 here, but if you add more buttons to buttonData
+            // then this will change, wich means adjusting the action id
+            // on ServerPlayerHandler.amigoAttitudeSwitch
+            final int index = buttonData.size();
+            LocalPlayer player = Minecraft.getInstance().player;
 
-        // There's should be probably a better way to add new buttons and actions
-        // Maybe using enums instead of raw ints to encode the action?
-        if (player != null && amigoEntity.canRideWithPlayer(player)) {
-            int buttonY = startY + buttonData.size() * (buttonHeight + buttonSpacing);
-            String format = Component.translatable("gui.migamigos.amigo_inventory.ride_with_player").getString();
-            String translation = player.getVehicle() == null ? format :
-                format.formatted(player.getVehicle().getName().getString());
-
-            this.addRenderableWidget(
-                Button.builder(Component.literal(translation), button -> {
-                    onButtonClick(buttonData.size());
-                    button.setMessage(Component.literal(translation));
-                })
-                .pos(startX, buttonY)
-                .size(buttonWidth, buttonHeight)
-                .build()
-            );
+            if (player != null) {
+                if (amigoEntity.canRideWithPlayer(player) || amigoEntity.getVehicle() != null) {
+                    addRideWithPlayerButton(player, index, startY, startX, buttonWidth, buttonHeight, buttonSpacing);
+                }
+            }
         }
     }
 
@@ -124,6 +119,39 @@ public class AmigoScreen extends AbstractContainerScreen<AmigoContainer> {
             return translationKeys[value ? 0: 1];
         }
         return translationKeys[value ? 1 : 0];
+    }
+
+    private void addRideWithPlayerButton(LocalPlayer player, int index, int startY, int startX, int width, int height, int spacing) {
+        Entity amigoVehicle = amigoEntity.getVehicle();
+        Entity playerVehicle = player.getVehicle();
+
+        // one of them should not be null, but just to be safe
+        if (amigoVehicle == null && playerVehicle == null)
+            return;
+
+        MutableComponent format = Component.translatable(
+            amigoVehicle == null ?
+                "gui.migamigos.amigo_inventory.ride_with_player" :
+                "gui.migamigos.amigo_inventory.stop_riding"
+        );
+
+        String translation = format.getString().formatted(
+            amigoVehicle == null ?
+                playerVehicle.getName().getString() :
+                amigoVehicle.getName().getString()
+        );
+
+        int buttonY = startY + index * (height + spacing);
+
+        this.addRenderableWidget(
+            Button.builder(Component.literal(translation), button -> {
+                onButtonClick(index);
+                button.setMessage(Component.literal(translation));
+            })
+            .pos(startX, buttonY)
+            .size(width, height)
+            .build()
+        );
     }
 
     @Override
