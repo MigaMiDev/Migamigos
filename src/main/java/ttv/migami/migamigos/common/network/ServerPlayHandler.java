@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import ttv.migami.migamigos.entity.AmigoEntity;
 import ttv.migami.migamigos.init.ModSounds;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static ttv.migami.migamigos.common.AmigoDataHandler.getAmigoByUUID;
@@ -130,6 +131,14 @@ public class ServerPlayHandler
                         amigoEntity.setPostPos(amigoEntity.getOnPos().getCenter().toVector3f());
                     }
                     break;
+                }
+                // Ride/stop riding with player
+                case 5: {
+                    if (amigoEntity.getVehicle() != null) {
+                        amigoEntity.stopRiding();
+                    } else if (amigoEntity.canRideWithPlayer(player)) {
+                        amigoEntity.startRiding(Objects.requireNonNull(player.getVehicle()));
+                    }
                 }
             }
         }

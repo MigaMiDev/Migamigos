@@ -26,6 +26,10 @@ public class EntityTagGen extends EntityTypeTagsProvider
                 .add(ModEntities.COCOGOAT.get())
                 .add(ModEntities.WAVELYN.get());
 
+        this.tag(ModTags.Entities.RIDE_WITH_PLAYER)
+            .add(EntityType.BOAT)
+            .add(EntityType.HORSE);
+
         this.tag(ModTags.Entities.UNDEAD)
                 .add(EntityType.ZOMBIE)
                 .add(EntityType.DROWNED)

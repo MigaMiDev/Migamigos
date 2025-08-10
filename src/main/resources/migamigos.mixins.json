@@ -1,15 +1,17 @@
 {
-  "required": true,
-  "package": "ttv.migami.migamigos.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "minVersion": "0.8",
-  "refmap": "migamigos.refmap.json",
-  "plugin": "ttv.migami.migamigos.mixin.MixinPlugin",
-  "mixins": [
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
+    "required": true,
+    "package": "ttv.migami.migamigos.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "minVersion": "0.8",
+    "refmap": "migamigos.refmap.json",
+    "plugin": "ttv.migami.migamigos.mixin.MixinPlugin",
+    "mixins": [
+        "MixinAbstractHorse",
+        "MixinEntity"
+    ],
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
   }
 }

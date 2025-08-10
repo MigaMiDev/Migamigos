@@ -13,6 +13,7 @@ public class ModTags
     {
         public static final TagKey<EntityType<?>> AMIGO = tag("amigo");
         public static final TagKey<EntityType<?>> UNDEAD = tag("undead");
+        public static final TagKey<EntityType<?>> RIDE_WITH_PLAYER = tag("ride_with_player");
 
         public static TagKey<EntityType<?>> tag(String name)
         {

@@ -26,6 +26,8 @@
   "gui.migamigos.amigo_inventory.allow_wandering.false": "Cannot Wander",
   "gui.migamigos.amigo_inventory.following.true": "Is Following",
   "gui.migamigos.amigo_inventory.following.false": "Is Staying",
+  "gui.migamigos.amigo_inventory.ride_with_player": "Get on %s",
+  "gui.migamigos.amigo_inventory.stop_riding": "Get off %s",
   "cutesy.migamigos.thanks": "Thank you for using Migamigos!",
   "chat.migamigos.favorite_item": "They like %1$s!",
   "chat.migamigos.foe_appeared": "A new foe has appeared!",
