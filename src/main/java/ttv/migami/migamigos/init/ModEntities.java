@@ -73,9 +73,9 @@ public class ModEntities
                     FeatureFlags.DEFAULT_FLAGS
             )
     );
-    public static final RegistryObject<AmigoEntityType<Shysaw>> SHYSAW = REGISTER.register("shysaw",
+    public static final RegistryObject<AmigoEntityType<Shybroom>> SHYBROOM = REGISTER.register("shybroom",
             () -> new AmigoEntityType<>(
-                    Shysaw::new,
+                    Shybroom::new,
                     MobCategory.CREATURE,
                     true,
                     true,

@@ -25,7 +25,7 @@ import tallestegg.guardvillagers.GuardEntityType;
 import ttv.migami.migamigos.Migamigos;
 import ttv.migami.migamigos.Reference;
 import ttv.migami.migamigos.entity.AmigoEntity;
-import ttv.migami.migamigos.entity.amigo.Shysaw;
+import ttv.migami.migamigos.entity.amigo.Shybroom;
 import ttv.migami.migamigos.init.ModCommands;
 import ttv.migami.migamigos.init.ModEntities;
 
@@ -101,21 +101,21 @@ public class EntitySpawnEventHandler {
             if (level.random.nextFloat() < 0.1F) {
                 if (event.getEntity() instanceof Vindicator vindicator && vindicator.getCurrentRaid() != null &&
                         (event.getSpawnType().equals(MobSpawnType.NATURAL) || event.getSpawnType().equals(MobSpawnType.EVENT))) {
-                    Shysaw shysaw = new Shysaw(ModEntities.SHYSAW.get(), level);
-                    shysaw.setEnemigo(true);
-                    shysaw.moveTo(vindicator.getX(), vindicator.getY(), vindicator.getZ(), vindicator.getYRot(), vindicator.getXRot());
-                    level.addFreshEntity(shysaw);
+                    Shybroom shybroom = new Shybroom(ModEntities.SHYBROOM.get(), level);
+                    shybroom.setEnemigo(true);
+                    shybroom.moveTo(vindicator.getX(), vindicator.getY(), vindicator.getZ(), vindicator.getYRot(), vindicator.getXRot());
+                    level.addFreshEntity(shybroom);
 
                     List<Player> playersInRaid = getRaidPlayers(vindicator.getCurrentRaid());
 
                     vindicator.discard();
 
-                    ModCommands.summonLightingBolt(level, shysaw.getPosition(1F));
-                    ModCommands.summonGroundCracks(level, shysaw.getPosition(1F));
+                    ModCommands.summonLightingBolt(level, shybroom.getPosition(1F));
+                    ModCommands.summonGroundCracks(level, shybroom.getPosition(1F));
 
                     if (!playersInRaid.isEmpty()) {
                         Player player = playersInRaid.get(level.random.nextInt(0, playersInRaid.size()));
-                        shysaw.setTarget(player);
+                        shybroom.setTarget(player);
 
                         for (Player playerMessage : playersInRaid) {
                             Component message = Component.translatable("chat.migamigos.foe_appeared")
@@ -126,17 +126,17 @@ public class EntitySpawnEventHandler {
                 }
                 if (event.getEntity() instanceof Witch witch &&
                         (event.getSpawnType().equals(MobSpawnType.NATURAL) || event.getSpawnType().equals(MobSpawnType.EVENT))) {
-                    Shysaw shysaw = new Shysaw(ModEntities.SHYSAW.get(), level);
-                    shysaw.setEnemigo(true);
-                    shysaw.moveTo(witch.getX(), witch.getY(), witch.getZ(), witch.getYRot(), witch.getXRot());
-                    level.addFreshEntity(shysaw);
+                    Shybroom shybroom = new Shybroom(ModEntities.SHYBROOM.get(), level);
+                    shybroom.setEnemigo(true);
+                    shybroom.moveTo(witch.getX(), witch.getY(), witch.getZ(), witch.getYRot(), witch.getXRot());
+                    level.addFreshEntity(shybroom);
 
                     if (witch.getCurrentRaid() != null) {
                         List<Player> playersInRaid = getRaidPlayers(witch.getCurrentRaid());
 
                         if (!playersInRaid.isEmpty()) {
                             Player player = playersInRaid.get(level.random.nextInt(0, playersInRaid.size()));
-                            shysaw.setTarget(player);
+                            shybroom.setTarget(player);
 
                             for (Player playerMessage : playersInRaid) {
                                 Component message = Component.translatable("chat.migamigos.foe_appeared")
@@ -148,8 +148,8 @@ public class EntitySpawnEventHandler {
 
                     witch.discard();
 
-                    ModCommands.summonLightingBolt(level, shysaw.getPosition(1F));
-                    ModCommands.summonGroundCracks(level, shysaw.getPosition(1F));
+                    ModCommands.summonLightingBolt(level, shybroom.getPosition(1F));
+                    ModCommands.summonGroundCracks(level, shybroom.getPosition(1F));
                 }
             }
         }
@@ -159,17 +159,17 @@ public class EntitySpawnEventHandler {
 
             AABB searchBox = vindicator.getBoundingBox().inflate(500);
 
-            List<Shysaw> existingEntities = level.getEntitiesOfClass(
-                    Shysaw.class, searchBox
+            List<Shybroom> existingEntities = level.getEntitiesOfClass(
+                    Shybroom.class, searchBox
             );
 
             if (existingEntities.isEmpty() && level.random.nextFloat() < 0.15F) {
                 event.setCanceled(true);
 
-                Shysaw shysaw = new Shysaw(ModEntities.SHYSAW.get(), level);
-                shysaw.setHeartless(true);
-                shysaw.moveTo(vindicator.getX(), vindicator.getY(), vindicator.getZ(), vindicator.getYRot(), vindicator.getXRot());
-                level.addFreshEntity(shysaw);
+                Shybroom shybroom = new Shybroom(ModEntities.SHYBROOM.get(), level);
+                if (shybroom.getRandom().nextBoolean()) shybroom.setHeartless(true);
+                shybroom.moveTo(vindicator.getX(), vindicator.getY(), vindicator.getZ(), vindicator.getYRot(), vindicator.getXRot());
+                level.addFreshEntity(shybroom);
             }
         }
 

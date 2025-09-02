@@ -20,9 +20,9 @@ public class ModItems {
     public static final RegistryObject<Item> CLAYMORE_SPAWN_TORTILLA = REGISTER.register("claymore_spawn_tortilla",
             () -> new ForgeSpawnEggItem(ModEntities.CLAYMORE, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
-    public static final RegistryObject<Item> SHYSAW_SPAWN_TEDDY_BEAR = REGISTER.register("shysaw_spawn_teddy_bear",
-            () -> new ForgeSpawnEggItem(ModEntities.SHYSAW, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+    public static final RegistryObject<Item> SHYBROOM_SPAWN_BROOM = REGISTER.register("shybroom_spawn_broom",
+            () -> new ForgeSpawnEggItem(ModEntities.SHYBROOM, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 
-    public static final RegistryObject<Item> POLLYPOUNCE_SPAWN_FISH = REGISTER.register("pollypounce_spawn_fish",
+    public static final RegistryObject<Item> POLLYPOUNCE_SPAWN_PARROT_PLUSHIE = REGISTER.register("pollypounce_spawn_parrot_plushie",
             () -> new ForgeSpawnEggItem(ModEntities.POLLYPOUNCE, 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 }

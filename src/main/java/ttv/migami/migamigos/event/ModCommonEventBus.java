@@ -23,7 +23,7 @@ public class ModCommonEventBus {
         event.put(ModEntities.COCOGOAT.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.WAVELYN.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.CLAYMORE.get(), AmigoEntity.createAttributes().build());
-        event.put(ModEntities.SHYSAW.get(), AmigoEntity.createAttributes().build());
+        event.put(ModEntities.SHYBROOM.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.POLLYPOUNCE.get(), AmigoEntity.createAttributes().build());
         event.put(ModEntities.CAPTAIN_BEAKBEARD.get(), Parrot.createAttributes().build());
 
@@ -64,10 +64,10 @@ public class ModCommonEventBus {
                 SpawnPlacementRegisterEvent.Operation.OR
         );
         event.register(
-                ModEntities.SHYSAW.get(),
+                ModEntities.SHYBROOM.get(),
                 SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.WORLD_SURFACE,
-                Shysaw::checkAmigoSpawnRules,
+                Shybroom::checkAmigoSpawnRules,
                 SpawnPlacementRegisterEvent.Operation.OR
         );
         event.register(

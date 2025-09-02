@@ -240,7 +240,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ItemStack itemstack = player.getItemInHand(hand);
         Random random = new Random();
 
-        this.lookAt(EntityAnchorArgument.Anchor.FEET, player.getEyePosition(1F));
+        this.lookAt(EntityAnchorArgument.Anchor.FEET, player.getPosition(1F));
         if (this.getEmoteCooldown() <= 0) {
             this.setActiveEmote(AmigoEmotes.WAVE);
         }

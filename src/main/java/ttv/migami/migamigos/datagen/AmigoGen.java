@@ -80,10 +80,10 @@ public class AmigoGen extends AmigoProvider
 
                 .build());
 
-        this.addAmigo(new ResourceLocation(Reference.MOD_ID, "shysaw"), Amigo.Builder.create()
+        this.addAmigo(new ResourceLocation(Reference.MOD_ID, "shybroom"), Amigo.Builder.create()
 
                 // General
-                .setName("shysaw")
+                .setName("shybroom")
                 .setFavoriteItem(Items.COOKED_CHICKEN)
                 .setHealth(30.0F)
                 .setHealingTimer(30)

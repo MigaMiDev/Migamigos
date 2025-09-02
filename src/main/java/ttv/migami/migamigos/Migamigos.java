@@ -95,7 +95,7 @@ public class Migamigos {
         EntityRenderers.register(ModEntities.COCOGOAT.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.WAVELYN.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.CLAYMORE.get(), AmigoRenderer::new);
-        EntityRenderers.register(ModEntities.SHYSAW.get(), AmigoRenderer::new);
+        EntityRenderers.register(ModEntities.SHYBROOM.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.POLLYPOUNCE.get(), AmigoRenderer::new);
         EntityRenderers.register(ModEntities.CAPTAIN_BEAKBEARD.get(), ParrotRenderer::new);
 

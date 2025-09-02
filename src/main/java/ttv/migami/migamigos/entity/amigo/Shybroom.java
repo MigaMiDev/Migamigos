@@ -25,12 +25,12 @@ import java.util.function.Consumer;
 
 import static ttv.migami.migamigos.common.network.ServerPlayHandler.tryToHurt;
 
-public class Shysaw extends AmigoEntity {
-    public Shysaw(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
+public class Shybroom extends AmigoEntity {
+    public Shybroom(EntityType<? extends AmigoEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setDefaultItem(Items.NETHERITE_AXE);
         this.chime = ModSounds.WAVELYN_CHIME.get();
-        this.setAmigoName("shysaw");
+        this.setAmigoName("shybroom");
     }
 
     @Override

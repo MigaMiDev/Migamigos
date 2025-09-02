@@ -3,7 +3,7 @@
   "entity.migamigos.cocogoat": "Cocogoat",
   "entity.migamigos.wavelyn": "Wavelyn",
   "entity.migamigos.claymore": "Claymore",
-  "entity.migamigos.shysaw": "Shysaw",
+  "entity.migamigos.shybroom": "Shybroom",
   "entity.migamigos.pollypounce": "Pollypounce",
   "slot.migamigos.coming_soon": "Coming soon!",
   "slot.migamigos.hide_armor_piece": "Hide Armor Piece",
@@ -26,8 +26,8 @@
   "gui.migamigos.amigo_inventory.allow_wandering.false": "Cannot Wander",
   "gui.migamigos.amigo_inventory.following.true": "Is Following",
   "gui.migamigos.amigo_inventory.following.false": "Is Staying",
-  "gui.migamigos.amigo_inventory.ride_with_player": "Get on %s",
-  "gui.migamigos.amigo_inventory.stop_riding": "Get off %s",
+  "gui.migamigos.amigo_inventory.ride_with_player": "Get On %s",
+  "gui.migamigos.amigo_inventory.stop_riding": "Get Off %s",
   "cutesy.migamigos.thanks": "Thank you for using Migamigos!",
   "chat.migamigos.favorite_item": "They like %1$s!",
   "chat.migamigos.foe_appeared": "A new foe has appeared!",
@@ -40,5 +40,7 @@
   "itemGroup.migamigos": "Migamigos",
   "item.migamigos.cocogoat_spawn_flower": "Cocogoat Spawn Flower",
   "item.migamigos.wavelyn_spawn_cookie": "Wavelyn Spawn Cookie",
-  "item.migamigos.claymore_spawn_tortilla": "Claymore Spawn Tortilla"
+  "item.migamigos.claymore_spawn_tortilla": "Claymore Spawn Tortilla",
+  "item.migamigos.pollypounce_spawn_parrot_plushie": "Pollypounce Spawn Parrot Plushie",
+  "item.migamigos.shybroom_spawn_broom": "Shybroom Spawn Broom"
 }
