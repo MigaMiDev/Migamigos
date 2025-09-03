@@ -4,7 +4,7 @@ license="GNU GPLv3"
 
 [[mods]]
 modId="migamigos"
-version="0.1.0"
+version="0.1.1"
 displayName="Migamigos"
 authors="MigaMi"
 credits=""

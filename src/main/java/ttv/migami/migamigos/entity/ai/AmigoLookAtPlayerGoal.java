@@ -100,11 +100,11 @@ public class AmigoLookAtPlayerGoal extends Goal {
             double $$0 = this.onlyHorizontal ? this.amigo.getEyeY() : this.lookAt.getEyeY();
             this.amigo.getLookControl().setLookAt(this.lookAt.getX(), $$0, this.lookAt.getZ());
             if (this.emote && this.amigo.getAmigoState().equals(AmigoState.IDLE)) {
-                if (this.lookAt instanceof Player player && !ServerPlayHandler.shouldHurt(this.amigo, player)) {
+                if (this.lookAt instanceof Player player && !ServerPlayHandler.shouldHurt(this.amigo, player) && player.getRandom().nextFloat() > 0.7F) {
                     this.amigo.setActiveEmote(AmigoEmotes.WAVE);
                 }
                 if (!this.amigo.isHeartless() && !this.amigo.isEnemigo()) {
-                    if (this.lookAt instanceof AmigoEntity amigoEntity && !ServerPlayHandler.shouldHurt(this.amigo, amigoEntity) && amigoEntity.getRandom().nextFloat() > 0.7F) {
+                    if (this.lookAt instanceof AmigoEntity amigoEntity && !ServerPlayHandler.shouldHurt(this.amigo, amigoEntity) && amigoEntity.getRandom().nextFloat() > 0.85F) {
                         this.amigo.setActiveEmote(AmigoEmotes.WAVE);
                         amigoEntity.setActiveEmote(AmigoEmotes.WAVE);
                         amigoEntity.lookAt(EntityAnchorArgument.Anchor.FEET, this.amigo.getEyePosition(1F));

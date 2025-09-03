@@ -15,6 +15,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import ttv.migami.migamigos.entity.AmigoEntity;
+import ttv.migami.migamigos.entity.amigo.Shybroom;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -51,6 +52,9 @@ public class NearestAttackableAmigoTargetGoal<T extends LivingEntity> extends Ta
     public boolean canUse() {
         if (!(this.mob instanceof AmigoEntity amigoEntity)) {
             return false;
+        }
+        if (amigoEntity instanceof Shybroom shybroom) {
+            if(!shybroom.hasPlayer() && shybroom.getPlayer() == null) return false;
         }
         if (amigoEntity.getHealth() < amigoEntity.getMaxHealth() / 3 && !amigoEntity.isHeartless() && !amigoEntity.isEnemigo()) {
             return false;
