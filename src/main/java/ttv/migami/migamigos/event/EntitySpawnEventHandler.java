@@ -98,7 +98,7 @@ public class EntitySpawnEventHandler {
         ServerLevel level = (ServerLevel) event.getEntity().level();
 
         if (event.getEntity() instanceof Raider) {
-            if (level.random.nextFloat() < 0.1F) {
+            if (event.getEntity().getRandom().nextFloat() < 0.1F) {
                 if (event.getEntity() instanceof Vindicator vindicator && vindicator.getCurrentRaid() != null &&
                         (event.getSpawnType().equals(MobSpawnType.NATURAL) || event.getSpawnType().equals(MobSpawnType.EVENT))) {
                     Shybroom shybroom = new Shybroom(ModEntities.SHYBROOM.get(), level);
