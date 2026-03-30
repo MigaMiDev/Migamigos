@@ -165,6 +165,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
         ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true);
 
         this.setLeftHanded(false);
+        this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
 
         if (pEntityType instanceof AmigoEntityType<?> amigoEntityType) {
             this.amigo = amigoEntityType.getAmigo();
@@ -209,7 +210,7 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new PersonalSpaceGoal(this));
+        //this.goalSelector.addGoal(1, new PersonalSpaceGoal(this));
         //this.goalSelector.addGoal(5, new AmigoMeleeAttackGoal(this, 1.6, true));
         //this.goalSelector.addGoal(5, new AmigoRangedAttackGoal<>(this, 1.6));
         this.goalSelector.addGoal(4, new AmigoEatOrDrinkGoal(this));
@@ -541,7 +542,17 @@ public class AmigoEntity extends PathfinderMob implements GeoEntity {
     public void die(DamageSource source) {
         super.die(source);
 
+        dropAmigoHeart();
         dropAllInventoryItems();
+    }
+
+    private void dropAmigoHeart() {
+        ItemStack heart = Items.STICK.getDefaultInstance();
+        CompoundTag tag = heart.getOrCreateTag();
+
+        addAdditionalSaveData(tag);
+
+        this.spawnAtLocation(heart);
     }
 
     private void dropAllInventoryItems() {

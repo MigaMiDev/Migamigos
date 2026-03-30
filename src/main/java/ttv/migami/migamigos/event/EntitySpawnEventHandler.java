@@ -124,6 +124,7 @@ public class EntitySpawnEventHandler {
                         }
                     }
                 }
+
                 if (event.getEntity() instanceof Witch witch &&
                         (event.getSpawnType().equals(MobSpawnType.NATURAL) || event.getSpawnType().equals(MobSpawnType.EVENT))) {
                     Shybroom shybroom = new Shybroom(ModEntities.SHYBROOM.get(), level);
@@ -143,13 +144,14 @@ public class EntitySpawnEventHandler {
                                         .withStyle(ChatFormatting.RED);
                                 playerMessage.displayClientMessage(message, true);
                             }
+                            ModCommands.summonLightingBolt(level, shybroom.getPosition(1F));
+                            ModCommands.summonGroundCracks(level, shybroom.getPosition(1F));
                         }
+                    } else {
+                        shybroom.setHeartless(true);
                     }
 
                     witch.discard();
-
-                    ModCommands.summonLightingBolt(level, shybroom.getPosition(1F));
-                    ModCommands.summonGroundCracks(level, shybroom.getPosition(1F));
                 }
             }
         }

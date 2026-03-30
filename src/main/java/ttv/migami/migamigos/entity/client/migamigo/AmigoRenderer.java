@@ -35,7 +35,7 @@ public class AmigoRenderer extends GeoEntityRenderer<AmigoEntity> {
     private static final String LEFT_ARMOR_LEG = "armor_left_leg";
     private static final String RIGHT_ARMOR_LEG = "armor_right_leg";
     private static final String CHESTPLATE = "armor_body";
-    private static final String BREAST = "armor_breasts";
+    private static final String BREAST = "no_armor_breasts";
     private static final String RIGHT_SLEEVE = "armor_right_arm";
     private static final String LEFT_SLEEVE = "armor_left_arm";
     private static final String HELMET = "armor_head";
